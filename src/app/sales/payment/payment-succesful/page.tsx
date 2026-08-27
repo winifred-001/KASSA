@@ -1,5 +1,7 @@
 
 import { Bell, Check, Landmark } from "lucide-react";
+import KassaSidebar from "@/components/KassaSidebar";
+
 const STEPS = [
   { label: "Sale", done: true },
   { label: "Payment", done: true },
@@ -20,10 +22,12 @@ export default function PaymentSuccessfulPage() {
   const branch = "Main branch";
 
   return (
+    <div className="min-h-screen bg-[#F5F6F8]">
+      <KassaSidebar/>
+      <div className="flex-1">
     <>
-      {/* Header */}
-      <header className="flex h-[80px] items-center justify-between border-b border-[#E5E7EB] bg-white px-[32px]">
-        <h1 className="text-[21px] font-bold text-[#182033]">
+      <header className="flex h-[80px] items-center justify-between border-b border-[#E5E7EB] bg-white px-[32px] py-[32px]">
+        <h1 className="px-[250px]  text-[21px] font-bold text-[#182033]">
           Payment Successful
         </h1>
 
@@ -44,10 +48,9 @@ export default function PaymentSuccessfulPage() {
         </div>
       </header>
 
-      {/* Step tracker */}
       <div className="flex items-center justify-center gap-3 px-[32px] pt-[24px]">
         {STEPS.map((step, i) => (
-          <div key={step.label} className="flex flex-1 items-center last:flex-none">
+          <div key={step.label} className="flex items-center ">
             <div className="flex flex-col items-center gap-1.5">
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0F4C3A] text-white">
                 <Check size={13} strokeWidth={3} />
@@ -61,16 +64,15 @@ export default function PaymentSuccessfulPage() {
               </span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className="mx-3 mb-5 h-px flex-1 bg-[#0F4C3A]" />
+              <div className="mx-3 mb-5 h-px w-[100px]  bg-[#0F4C3A]" />
             )}
           </div>
         ))}
       </div>
 
       
-      <section className="flex items-start justify-center gap-6 px-[32px] pb-[40px] pt-[32px]">
-        {/* Success card */}
-        <div className="flex-1 h-[500px] max-w-[560px] rounded-2xl border border-[#E5E7EB] bg-white p-10 text-center">
+      <section className="flex items-start justify-center gap-6 px-[32px]  pb-[40px] pt-[32px]">
+        <div className="flex-1 h-[500px] max-w-[560px] rounded-2xl border border-[#E5E7EB] bg-white p-10 px-[64px] text-center">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[#0F4C3A]">
             <Check className="text-white" size={30} strokeWidth={3} />
           </div>
@@ -108,7 +110,6 @@ export default function PaymentSuccessfulPage() {
           </button>
         </div>
 
-        {/* Sale status card */}
         <div className="h-[500px] w-[280px] flex-shrink-0 item-center justify-center rounded-2xl border border-[#E5E7EB] bg-white p-6">
           <h3 className="text-[14px] font-semibold text-[#182033]">
             Sale status
@@ -156,5 +157,7 @@ export default function PaymentSuccessfulPage() {
         Kassa • Secure Payment
       </footer>
     </>
+    </div>
+    </div>
   );
 }
