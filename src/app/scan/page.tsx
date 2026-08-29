@@ -94,12 +94,14 @@ export default function ScanProductPage() {
               <button className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20">
                 <Zap size={18} />
               </button>
-              <button className="flex flex-col items-center gap-1 text-white">
+                 
+              <Link href={"/scan/product-code"}
+                className="flex flex-col items-center gap-1 text-white">
                 <span className="w-11 h-11 rounded-full bg-emerald-700 flex items-center justify-center">
                   <Keyboard size={18} />
                 </span>
                 <span className="text-xs text-gray-300">Enter code manually</span>
-              </button>
+              </Link>
               <button className="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20">
                 <Camera size={18} />
               </button>

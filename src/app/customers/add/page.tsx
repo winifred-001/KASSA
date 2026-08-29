@@ -1,9 +1,12 @@
 "use client";
-
+import {useRouter} from "next/navigation";
 import { useState } from "react";
 import KassaSidebar from "@/components/KassaSidebar";
+import { Loader2, CheckCircle2, X } from "lucide-react";
 
 export default function AddCustomerPage() {
+    const router = useRouter();    
+  const [saving, setSaving] = useState(false);  
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
@@ -12,10 +15,22 @@ export default function AddCustomerPage() {
     address: "",
     notes: "",
   });
+  const [showToast, setShowToast] = useState(false);
 
   const handleChange = (field: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
+  const handleSave = async () => {
+  setSaving(true);
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // remove once real API is wired up
+
+  setSaving(false);
+  setShowToast(true);
+
+  setTimeout(() => {
+    router.push("/customers?added=true");
+  }, 1200);
+};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -110,11 +125,18 @@ export default function AddCustomerPage() {
           </div>
 
           <div className="flex justify-end gap-3 mt-6">
-            <button className="px-5 py-2.5 rounded-lg border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <button
+              type="button"
+              onClick={() => router.push("/customers")}
+              className="rounded-lg border border-[#E5E7EB] px-5 py-2.5 text-[13px] font-medium text-[#182033] hover:bg-[#d8d6d6]">
               Cancel
             </button>
-            <button className="px-5 py-2.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-sm font-medium transition-colors">
-              Save Customer
+            <button  
+              onClick={handleSave}
+              disabled={saving}
+              className="px-5 py-2.5 rounded-lg border border-gray-200 text-sm font-medium text-white -700 bg-emerald-800 hover:bg-emerald-900 transition-colors ">
+              {saving && <Loader2 size={14} className="animate-spin" />}
+              {saving ? "Saving..." : "Save customer"}
             </button>
           </div>
         </div>
