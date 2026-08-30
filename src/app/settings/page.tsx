@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { X, Check } from "lucide-react";
+import{useSearchParams , useRouter} from "next/navigation";
+import { useState, useEffect} from "react";
+import { X, Check, Loader2, CheckCircle2 } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 
 const navItems = [
@@ -47,6 +48,36 @@ export default function SettingsPage() {
   const handleChange = (field: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
+  
+ const router = useRouter();  
+ const [saving, setSaving] = useState(false);
+ const searchParams = useSearchParams();
+  const [showSettingsToast, setShowSettingsToast] = useState(false);
+  
+ useEffect(() => {
+  const added = searchParams.get("added");
+  if (added === "business-profile") {
+    setShowSettingsToast(true);
+    router.replace("/settings");
+  }
+}, [searchParams, router]);
+
+useEffect(() => {
+  if (!showSettingsToast) return;
+  const timer = setTimeout(() => setShowSettingsToast(false), 4000);
+  return () => clearTimeout(timer);
+}, [showSettingsToast]);
+
+  const handleSave = async () => {
+  setSaving(true);
+  await new Promise((resolve) => setTimeout(resolve, 1000)); // remove once real API is wired up
+
+  setSaving(false);
+
+  setTimeout(() => {
+    router.push("/settings?added=business-profile");
+  }, 1200);
+ };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -139,8 +170,12 @@ export default function SettingsPage() {
                     </div>
                   </div>
 
-                  <button className="mt-6 bg-emerald-800 hover:bg-emerald-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors">
-                    Save changes
+                  <button 
+                   onClick={handleSave}
+                   disabled={saving}
+                   className="mt-6 flex item-center justify-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                    {saving && <Loader2 size={14} className="animate-spin" />}
+                      {saving ? "Saving..." : "Save changes"}
                   </button>
                 </div>
 
@@ -704,6 +739,19 @@ export default function SettingsPage() {
               </div>
             )}
           </div>
+        </div>
+      )}
+      {showSettingsToast && (
+        <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-lg">
+          <CheckCircle2 className="text-[#0F4C3A]" size={20} />
+          <div>
+            <p className="text-[13px] font-semibold text-[#182033]">
+             Changes saved successfully
+            </p>
+          </div>
+          <button onClick={() => setShowSettingsToast(false)}>
+            <X size={14} className="text-[#98A1AE]" />
+          </button>
         </div>
       )}
     </div>
