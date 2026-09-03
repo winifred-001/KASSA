@@ -122,7 +122,7 @@ export default function StaffBranchesPage() {
  const [saving, setSaving] = useState(false); 
 
  // Branch toast
-useEffect(() => {
+ useEffect(() => {
   const added = searchParams.get("added");
   if (added === "branch") {
     setShowBranchToast(true);
@@ -131,7 +131,7 @@ useEffect(() => {
   }
 }, [searchParams, router]);
 
-useEffect(() => {
+ useEffect(() => {
   if (!showBranchToast) return;
   const timer = setTimeout(() => setShowBranchToast(false), 4000);
   return () => clearTimeout(timer);
@@ -154,7 +154,7 @@ useEffect(() => {
 }, [showRoleToast]);
 
 // Staff toast
-useEffect(() => {
+ useEffect(() => {
   const added = searchParams.get("added");
   if (added === "staff") {
     setShowStaffToast(true);

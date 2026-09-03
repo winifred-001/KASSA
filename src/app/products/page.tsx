@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Plus, MoreHorizontal, ChevronDown } from "lucide-react";
+import { useState,useEffect } from "react";
+import { Search, Plus, MoreHorizontal, ChevronDown, X, CheckCircle2} from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
 
@@ -79,6 +80,30 @@ export default function ProductsPage() {
 
   const headerButtonLabel =
     activeTab === "Catalogue" ? "Add product" : activeTab === "Categories" ? "Add category" : "Restock product";
+
+ const [showRestockToast, setShowRestockToast] = useState(false);
+ const searchParams = useSearchParams();
+ const router = useRouter();
+
+ const [restockedProduct, setRestockedProduct] = useState("");
+ const [restockedUnits, setRestockedUnits] = useState("");
+
+ useEffect(() => {
+  const added = searchParams.get("added");
+  if (added === "restock") {
+    setShowRestockToast(true);
+    setActiveTab("Low Stock");
+    setRestockedProduct(searchParams.get("product") || "");
+    setRestockedUnits(searchParams.get("units") || "");
+    router.replace("/products");
+  }
+ }, [searchParams, router]);
+
+ useEffect(() => {
+  if (!showRestockToast) return;
+  const timer = setTimeout(() => setShowRestockToast(false), 4000);
+  return () => clearTimeout(timer);
+}, [showRestockToast]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -361,6 +386,25 @@ export default function ProductsPage() {
           </>
         )}
       </main>
+      {showRestockToast && (
+  <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-lg">
+    <CheckCircle2 className="text-[#0F4C3A]" size={20} />
+    <div>
+      <p className="text-[13px] font-semibold text-[#182033]">
+        Restock Successful
+      </p>
+      <p className="text-[12px] text-[#98A1AE]">
+       {restockedUnits} units added to {restockedProduct}.
+      </p>
+      <p className="text-[13px] text-[#008236]">
+        Stock is now above the low level threshold.
+      </p>
+    </div>
+    <button onClick={() => setShowRestockToast(false)}>
+      <X size={14} className="text-[#98A1AE]" />
+    </button>
+  </div>
+)}
     </div>
   );
 }
