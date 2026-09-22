@@ -66,7 +66,7 @@ const transactions = [
     id: "TXN-2026-000146",
     customer: "Tunde Bakare",
     cashier: "Ifeoma Bassey",
-    channel: "Hefa Wallet",
+    channel: "kassa Wallet",
     items: "2 items",
     amount: "₦6,900",
     status: "Success",
@@ -167,11 +167,11 @@ function SummaryCard({
   valueClass?: string;
 }) {
   return (
-    <div className="min-h-[73px] rounded-[11px] border border-[#DFE3E8] bg-white px-4 py-[14px] sm:px-[23px]">
+    <div className="min-h-[88px] w-full rounded-[11px] border border-[#DFE3E8] bg-white px-4 py-4 sm:px-[23px] sm:py-[18px]">
       <p className="text-[12px] text-[#70798A]">{title}</p>
 
       <p
-        className={`mt-[3px] text-[19px] font-bold tracking-[-0.3px] sm:text-[22px] ${valueClass}`}
+        className={`mt-1 text-[19px] font-bold tracking-[-0.3px] sm:text-[22px] ${valueClass}`}
       >
         {value}
       </p>
@@ -265,7 +265,7 @@ export default function TransactionsPage() {
           </div>
 
           {/* Summary */}
-          <div className="mt-[18px] grid grid-cols-2 gap-3 sm:flex sm:gap-[15px]">
+          <div className="mt-[18px] grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
             <SummaryCard title="Total received" value="₦2,840,600" />
 
             <SummaryCard
