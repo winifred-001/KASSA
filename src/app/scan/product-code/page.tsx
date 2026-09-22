@@ -86,11 +86,12 @@ export default function EnterProductCodePage() {
               You can also scan the barcode instead.
             </p>
  
-            <link href="/scan"
-             className="mx-auto mt-3 flex items-center gap-1.5 rounded-lg border border-[#E5E7EB] px-4 py-2 text-[13px] text-[#182033]">
-              <ScanLine size={14} />
-              Return to scanner
-            </link>
+            <Link href="/scan" passHref>
+              <button className="mx-auto mt-3 flex items-center gap-1.5 rounded-lg border border-[#E5E7EB] px-4 py-2 text-[13px] text-[#182033]">
+                <ScanLine size={14} />
+                Return to scanner
+              </button>
+            </Link>
           </div>
  
           {/* Quick tip card */}

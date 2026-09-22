@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
-import { Menu, X, Check, Loader2, CheckCircle2 } from "lucide-react";
+import { Menu, X, Check, Loader2, CheckCircle2,Bell } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 
 const navItems = [
@@ -41,14 +41,7 @@ const recentExports = [
   },
 ];
 
-const mobileNavItems = [
-  { name: "Home", href: "/dashboard" },
-  { name: "Transactions", href: "/transactions" },
-  { name: "Reports & Analytics", href: "/reports" },
-  { name: "Products & Inventory", href: "/products" },
-  { name: "Staff & Branches", href: "/staff-branches" },
-  { name: "Settings", href: "/settings" },
-];
+
 
 function ToggleSwitch({
   checked,
@@ -77,6 +70,7 @@ function ToggleSwitch({
 }
 
 function SettingsPageContent() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [active, setActive] = useState<NavItem>("Business profile");
   const [showChangePlan, setShowChangePlan] = useState(false);
   const [upgradeStep, setUpgradeStep] = useState<0 | 1 | 2 | 3>(0);
@@ -154,7 +148,35 @@ function SettingsPageContent() {
   const [exportFormat, setExportFormat] = useState("CSV");
   const [exportDateRange, setExportDateRange] =
     useState("All available data");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+   // Branch selected from the dashboard
+    const [selectedBranch, setSelectedBranch] = useState("Main branch");
+  
+    // Get the selected branch from the dashboard
+    useEffect(() => {
+      const savedBranch = localStorage.getItem("selectedBranch");
+  
+      if (savedBranch) {
+        setSelectedBranch(savedBranch);
+      }
+    }, []);
+  
+    // Listen for branch changes
+    useEffect(() => {
+      const handleBranchChange = () => {
+        const savedBranch = localStorage.getItem("selectedBranch");
+  
+        if (savedBranch) {
+          setSelectedBranch(savedBranch);
+        }
+      };
+  
+      window.addEventListener("storage", handleBranchChange);
+  
+      return () => {
+        window.removeEventListener("storage", handleBranchChange);
+      };
+    }, []);
 
   if (active === "Delete Account" && deleteStep === 2) {
     return (
@@ -237,93 +259,64 @@ function SettingsPageContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="hidden md:block">
-        <KassaSidebar isOpen={false} onClose={() => {}} />
+         <KassaSidebar
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+              />
       </div>
+      <main className="min-h-screen lg:ml-[198px]">
+         {/* Mobile header row with menu button */}
+                        <header className="flex min-h-[80px] mb-7 h-20 items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+                
+                          {/* Hamburger + Greeting */}
+                          <div className="flex min-w-0 items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setSidebarOpen(true)}
+                              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+                              aria-label="Open menu"
+                            >
+                              <Menu size={22} />
+                            </button>
+                
+                            <h1 className=" truncate text-[15px] font-bold text-[#182033] sm:text-[10px] lg:text-[21px]">
+                             Settings
+                            </h1>
+                
+                          </div>
+                
+                          {/* Header actions */}
+                          <div className="flex shrink-0 items-center gap-2 sm:gap-4 lg:gap-5">
+                
+                            {/* Branch display - no dropdown */}
+                            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+                              <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                                <span className="truncate">{selectedBranch}</span>
+                              </div>
+                            </div>
+                
+                            {/* Notification */}
+                            <button
+                              className="relative flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#F8F9FA]"
+                              type="button"
+                              aria-label="Notifications"
+                            >
+                              <Bell size={17} className="text-[#98A1AE]" />
+                
+                              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+                            </button>
+                
+                            {/* Profile */}
+                            <div className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+                              AO
+                            </div>
+                          </div>
+                          
+                
+                        </header>
+        
 
-      <div className="md:hidden sticky top-0 z-40 bg-emerald-800 px-4 py-4 flex items-center justify-between">
-        <span className="text-white font-semibold text-lg">Kassa</span>
-
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen((prev) => !prev)}
-          aria-label="Open navigation menu"
-          aria-expanded={mobileMenuOpen}
-          className="text-white"
-        >
-          <Menu size={24} />
-        </button>
-      </div>
-
-      {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50">
-          <button
-            type="button"
-            aria-label="Close navigation menu"
-            onClick={() => setMobileMenuOpen(false)}
-            className="absolute inset-0 bg-black/40"
-          />
-
-          <aside className="relative z-10 h-full w-[260px] max-w-[85vw] bg-[#08745F] text-white shadow-xl">
-            <div className="flex h-[72px] items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex h-[34px] w-[26px] items-center justify-center rounded-r-md bg-white text-[17px] font-bold text-[#08745F]">
-                  K
-                </div>
-
-                <span className="text-[18px] font-semibold">Kassa</span>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(false)}
-                aria-label="Close navigation menu"
-                className="mr-4 rounded-md p-2 text-white/90 hover:bg-[#075C4D]"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <nav className="mt-8 flex flex-col gap-1">
-              {mobileNavItems.map((item) => {
-                const activeRoute =
-                  pathname === item.href ||
-                  (item.href !== "/dashboard" &&
-                    pathname?.startsWith(item.href));
-
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`relative flex h-11 items-center px-4 text-sm transition ${
-                      activeRoute
-                        ? "rounded-r-lg bg-[#075C4D] font-semibold"
-                        : "text-white/90 hover:bg-[#075C4D]/60"
-                    }`}
-                  >
-                    <span
-                      className={`mr-[9px] h-[5px] w-[5px] rounded-full ${
-                        activeRoute
-                          ? "bg-[#B7E5D5]"
-                          : "bg-transparent"
-                      }`}
-                    />
-
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </nav>
-          </aside>
-        </div>
-      )}
-
-      <main className="ml-0 md:ml-[198px] p-4 md:p-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-6">
-          Settings
-        </h1>
-
-        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 px-3">
           <aside className="w-full md:w-64 shrink-0">
             <nav className="bg-white rounded-xl border border-gray-200 p-2 overflow-x-auto">
               {navItems.map((item) => (

@@ -2,7 +2,7 @@
  
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, ChevronDown, Download, MoreHorizontal, Plus, CheckCircle2, X, Menu } from "lucide-react";
+import { Search, ChevronDown, Download, MoreHorizontal, Plus, CheckCircle2, X, Menu,Bell } from "lucide-react";
 import Link from "next/link";
 import KassaSidebar from "@/components/KassaSidebar";
  
@@ -44,7 +44,35 @@ function CustomersPageContent() {
   const filtered = customers.filter((c) =>
     `${c.name} ${c.phone} ${c.email}`.toLowerCase().includes(query.toLowerCase())
   );
- 
+  // Branch selected from the dashboard
+        const [selectedBranch, setSelectedBranch] = useState("Main branch");
+      
+        // Get the selected branch from the dashboard
+        useEffect(() => {
+          const savedBranch = localStorage.getItem("selectedBranch");
+      
+          if (savedBranch) {
+            setSelectedBranch(savedBranch);
+          }
+        }, []);
+      
+        // Listen for branch changes
+        useEffect(() => {
+          const handleBranchChange = () => {
+            const savedBranch = localStorage.getItem("selectedBranch");
+      
+            if (savedBranch) {
+              setSelectedBranch(savedBranch);
+            }
+          };
+      
+          window.addEventListener("storage", handleBranchChange);
+      
+          return () => {
+            window.removeEventListener("storage", handleBranchChange);
+          };
+        }, []);
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
       <KassaSidebar
@@ -52,22 +80,45 @@ function CustomersPageContent() {
         onClose={() => setSidebarOpen(false)}
       />
  
-      <main className="min-h-screen lg:ml-[198px] p-4 sm:p-6 lg:p-8">
-        {/* Mobile header row with menu button */}
-        <div className="flex items-center gap-3 mb-1">
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="shrink-0 rounded-md p-1.5 text-gray-600 transition hover:bg-gray-100 lg:hidden"
-            aria-label="Open menu"
-          >
-            <Menu size={22} />
-          </button>
+      <main className="min-h-screen lg:ml-[198px]">
+         {/* Header */}
+                <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSidebarOpen(true)}
+                      className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+                      aria-label="Open menu"
+                    >
+                      <Menu size={22} />
+                    </button>
+        
+                    <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
+                      Customers
+                    </h1>
+                  </div>
+        
+                  <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+                    {/* Branch display - no dropdown */}
+                    <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+                      <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                        <span className="truncate">{selectedBranch}</span>
+                      </div>
+                    </div>
+                    <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
+                      <Bell size={17} className="text-[#98A1AE]" />
+        
+                      <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+                    </button>
+        
+                    <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+                      AO
+                    </div>
+                  </div>
+                </header>
+       
  
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Customers</h1>
-        </div>
- 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 mt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 mt-2 px-3 mt-4">
           <div>
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">Manage customers</h2>
             <p className="text-gray-500 text-sm sm:text-base">View, search and manage your customer records.</p>
@@ -82,7 +133,7 @@ function CustomersPageContent() {
         </div>
  
         {/* Summary cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-3">
           <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
             <p className="text-sm text-gray-500 mb-2">Total customers</p>
             <div className="flex items-baseline gap-2 flex-wrap">
@@ -114,7 +165,7 @@ function CustomersPageContent() {
         </div>
  
         {/* Search + filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="flex flex-col sm:flex-row gap-3 mb-4 px-3">
           <div className="flex-1 relative">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -142,7 +193,7 @@ function CustomersPageContent() {
         </div>
  
         {/* Customers table */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+        <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto px-3">
           <table className="w-full min-w-[820px] text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">

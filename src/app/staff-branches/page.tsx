@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   ChevronDown,
   Menu,
+  Bell
 } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 import Link from "next/link";
@@ -180,6 +181,35 @@ useEffect(() => {
   setShowStaffToast(true);
 };
 
+// Branch selected from the dashboard
+      const [selectedBranch, setSelectedBranch] = useState("Main branch");
+    
+      // Get the selected branch from the dashboard
+      useEffect(() => {
+        const savedBranch = localStorage.getItem("selectedBranch");
+    
+        if (savedBranch) {
+          setSelectedBranch(savedBranch);
+        }
+      }, []);
+    
+      // Listen for branch changes
+      useEffect(() => {
+        const handleBranchChange = () => {
+          const savedBranch = localStorage.getItem("selectedBranch");
+    
+          if (savedBranch) {
+            setSelectedBranch(savedBranch);
+          }
+        };
+    
+        window.addEventListener("storage", handleBranchChange);
+    
+        return () => {
+          window.removeEventListener("storage", handleBranchChange);
+        };
+      }, []);
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
       <KassaSidebar
@@ -187,26 +217,50 @@ useEffect(() => {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <main className="min-h-screen lg:ml-[198px] p-4 sm:p-6 lg:p-8">
-        {/* Mobile header row with menu button */}
-        <div className="flex items-center gap-3 mb-1">
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="shrink-0 rounded-md p-1.5 text-gray-600 transition hover:bg-gray-100 lg:hidden"
-            aria-label="Open menu"
-          >
-            <Menu size={22} />
-          </button>
+      <main className="min-h-screen lg:ml-[198px] ">
+          {/* Header */}
+                        <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setSidebarOpen(true)}
+                              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+                              aria-label="Open menu"
+                            >
+                              <Menu size={22} />
+                            </button>
+                
+                            <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
+                                Staff & Branches
+                            </h1>
+                          </div>
+                
+                          <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+                              {/* Branch display - no dropdown */}
+                            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+                              <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                                <span className="truncate">{selectedBranch}</span>
+                              </div>
+                            </div>
+                
+                            <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
+                              <Bell size={17} className="text-[#98A1AE]" />
+                
+                              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+                            </button>
+                
+                            <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+                              AO
+                            </div>
+                          </div>
+                        </header>
 
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Staff & Branches</h1>
-        </div>
-        <p className="text-gray-500 mb-6 text-sm sm:text-base">
+        <p className="text-gray-500 mb-6 text-sm sm:text-base px-3 mt-4">
           Manage your team, branches, and access permissions.
         </p>
 
         {/* Tabs + action button */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center mb-6 px-3">
           <div className="flex flex-1 bg-white rounded-lg border border-gray-200 p-1 overflow-x-auto">
             {tabs.map((tab) => (
               <button
@@ -248,10 +302,10 @@ useEffect(() => {
         {/* ---------------- STAFF TAB ---------------- */}
         {activeTab === "Staff" && !showInviteForm && (
           <>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">Staff</h2>
-            <p className="text-gray-500 mb-4 text-sm sm:text-base">Manage staff members and their access.</p>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-3">Staff</h2>
+            <p className="text-gray-500 mb-4 text-sm sm:text-base px-3">Manage staff members and their access.</p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 px-3">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">Total staff</p>
                 <p className="text-xl sm:text-2xl font-semibold text-gray-900">{totalStaff}</p>
@@ -266,7 +320,7 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-3">
               <div className="flex-1 relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
@@ -282,7 +336,7 @@ useEffect(() => {
               </button>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto px-3">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">
@@ -328,12 +382,12 @@ useEffect(() => {
         {/* ---------------- INVITE STAFF FORM ---------------- */}
         {activeTab === "Staff" && showInviteForm && (
           <>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">Invite Staff</h2>
-            <p className="text-gray-500 mb-6 text-sm sm:text-base">
-              Send an invitation to a staff member to join your Hefa account.
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-3">Invite Staff</h2>
+            <p className="text-gray-500 mb-6 text-sm sm:text-base px-3">
+              Send an invitation to a staff member to join your Kassa account.
             </p>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-3">
               <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5 sm:p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">Staff details</h3>
                 <p className="text-sm text-gray-500 mb-5">
@@ -489,10 +543,10 @@ useEffect(() => {
         {/* ---------------- BRANCHES TAB ---------------- */}
         {activeTab === "Branches" && (
           <>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">Branches</h2>
-            <p className="text-gray-500 mb-4 text-sm sm:text-base">Manage your business locations and branch activity.</p>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-3">Branches</h2>
+            <p className="text-gray-500 mb-4 text-sm sm:text-base px-3">Manage your business locations and branch activity.</p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 px-3">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">Total branches</p>
                 <div className="flex items-baseline gap-2 flex-wrap">
@@ -516,7 +570,7 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-3">
               <div className="flex-1 relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
@@ -534,7 +588,7 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto px-3">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">
@@ -584,12 +638,12 @@ useEffect(() => {
         {/* ---------------- ROLES & PERMISSIONS TAB ---------------- */}
         {activeTab === "Roles & Permissions" && (
           <>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">Roles & permissions</h2>
-            <p className="text-gray-500 mb-4 text-sm sm:text-base">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-3">Roles & permissions</h2>
+            <p className="text-gray-500 mb-4 text-sm sm:text-base px-3 ">
               Control what each role can view, create, edit, and manage.
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 px-3">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">Roles</p>
                 <p className="text-xl sm:text-2xl font-semibold text-gray-900">{totalRoles}</p>
@@ -608,7 +662,7 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-3">
               <div className="flex-1 relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
@@ -621,7 +675,7 @@ useEffect(() => {
               </button>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto mb-6">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto mb-6 ">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">
@@ -650,9 +704,9 @@ useEffect(() => {
               </table>
             </div>
 
-            <p className="text-sm text-gray-500 mb-4">Select a role to review or edit its permissions.</p>
+            <p className="text-sm text-gray-500 mb-4 px-3">Select a role to review or edit its permissions.</p>
 
-            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-5">
+            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-5 px-3">
               <p className="text-sm font-semibold text-emerald-800 mb-1">Permission tip</p>
               <p className="text-sm text-emerald-700">
                 Give each team member only the access they need for their responsibilities.

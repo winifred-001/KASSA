@@ -1,7 +1,7 @@
 "use client";
  
-import { useState } from "react";
-import { CheckCircle2, X, Menu } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle2, X, Menu, Bell } from "lucide-react";
 import Link from "next/link";
 import KassaSidebar from "@/components/KassaSidebar";
  
@@ -23,35 +23,80 @@ export default function AddCategoryPage() {
     setSaved(true);
     setShowBanner(true);
   };
+
+// Branch selected from the dashboard
+      const [selectedBranch, setSelectedBranch] = useState("Main branch");
+    
+      // Get the selected branch from the dashboard
+      useEffect(() => {
+        const savedBranch = localStorage.getItem("selectedBranch");
+    
+        if (savedBranch) {
+          setSelectedBranch(savedBranch);
+        }
+      }, []);
+    
+      // Listen for branch changes
+      useEffect(() => {
+        const handleBranchChange = () => {
+          const savedBranch = localStorage.getItem("selectedBranch");
+    
+          if (savedBranch) {
+            setSelectedBranch(savedBranch);
+          }
+        };
+    
+        window.addEventListener("storage", handleBranchChange);
+    
+        return () => {
+          window.removeEventListener("storage", handleBranchChange);
+        };
+      }, []);
+        
  
   return (
     <div className="min-h-screen bg-gray-50">
       <KassaSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
  
-      <main className="lg:ml-[198px] p-4 sm:p-6 lg:p-8">
-        <div className="flex items-center gap-3 mb-1">
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="shrink-0 rounded-md p-1.5 text-gray-600 transition hover:bg-gray-100 lg:hidden"
-            aria-label="Open menu"
-          >
-            <Menu size={22} />
-          </button>
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-            Products &amp; Inventory
-          </h1>
-        </div>
-        <p className="text-sm sm:text-base text-gray-500 mb-6">
-          Manage your products, categories, and stock levels.
-        </p>
+      <main className="lg:ml-[198px] ">
+         {/* Header */}
+        <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
+
+            <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
+                Add Catergory
+            </h1>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+              {/* Branch display - no dropdown */}
+            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+              <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                <span className="truncate">{selectedBranch}</span>
+              </div>
+            </div>
+
+            <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
+              <Bell size={17} className="text-[#98A1AE]" />
+
+              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+            </button>
+
+            <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+              AO
+            </div>
+          </div>
+        </header>
  
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">Add category</h2>
-        <p className="text-sm sm:text-base text-gray-500 mb-6">
-          Create a category to organize products in your catalogue.
-        </p>
- 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-3 mt-4">
           <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
               Category information

@@ -119,7 +119,7 @@ export default function DashboardPage() {
               <Menu size={22} />
             </button>
 
-            <h1 className="truncate text-[10px] font-bold text-[#182033] sm:text-[10px] lg:text-[21px]">
+            <h1 className="truncate text-[15px] font-bold text-[#182033] sm:text-[10px] lg:text-[21px]">
               Good morning, Adebola
             </h1>
           </div>

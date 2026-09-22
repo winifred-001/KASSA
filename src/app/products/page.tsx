@@ -9,6 +9,7 @@ import {
   X,
   CheckCircle2,
   Menu,
+  Bell,
 } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -236,6 +237,35 @@ function ProductsPageContent() {
       ? "Add category"
       : "Restock product";
 
+ // Branch selected from the dashboard
+  const [selectedBranch, setSelectedBranch] = useState("Main branch");
+
+  // Get the selected branch from the dashboard
+  useEffect(() => {
+    const savedBranch = localStorage.getItem("selectedBranch");
+
+    if (savedBranch) {
+      setSelectedBranch(savedBranch);
+    }
+  }, []);
+
+  // Listen for branch changes
+  useEffect(() => {
+    const handleBranchChange = () => {
+      const savedBranch = localStorage.getItem("selectedBranch");
+
+      if (savedBranch) {
+        setSelectedBranch(savedBranch);
+      }
+    };
+
+    window.addEventListener("storage", handleBranchChange);
+
+    return () => {
+      window.removeEventListener("storage", handleBranchChange);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
       <KassaSidebar
@@ -243,31 +273,66 @@ function ProductsPageContent() {
         onClose={() => setSidebarOpen(false)}
       />
  
-      <main className="min-h-screen lg:ml-[198px] p-4 sm:p-6 lg:p-8">
-        {/* Mobile header row */}
-        <div className="flex items-center gap-3 mb-1">
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="shrink-0 rounded-md p-1.5 text-gray-600 transition hover:bg-gray-100 lg:hidden"
-            aria-label="Open menu"
-          >
-            <Menu size={22} />
-          </button>
- 
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-            Products & Inventory
-          </h1>
-        </div>
+      <main className="min-h-screen lg:ml-[198px] ">
+         {/* Mobile header row with menu button */}
+                <header className="flex min-h-[80px] mb-7 h-20 items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+        
+                  {/* Hamburger + Greeting */}
+                  <div className="flex min-w-0 items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setSidebarOpen(true)}
+                      className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+                      aria-label="Open menu"
+                    >
+                      <Menu size={22} />
+                    </button>
+        
+                    <h1 className=" truncate text-[15px] font-bold text-[#182033] sm:text-[10px] lg:text-[21px]">
+                     Products & Inventory
+                    </h1>
+        
+                  </div>
+        
+                  {/* Header actions */}
+                  <div className="flex shrink-0 items-center gap-2 sm:gap-4 lg:gap-5">
+        
+                    {/* Branch display - no dropdown */}
+                    <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+                      <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                        <span className="truncate">{selectedBranch}</span>
+                      </div>
+                    </div>
+        
+                    {/* Notification */}
+                    <button
+                      className="relative flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#F8F9FA]"
+                      type="button"
+                      aria-label="Notifications"
+                    >
+                      <Bell size={17} className="text-[#98A1AE]" />
+        
+                      <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+                    </button>
+        
+                    {/* Profile */}
+                    <div className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+                      AO
+                    </div>
+                  </div>
+                  
+        
+                </header>
+        
 
-        <p className="text-gray-500 mb-6 text-sm sm:text-base">
+        <p className="text-gray-500 mb-6 text-sm sm:text-base px-3">
           {activeTab === "Low Stock"
             ? "Monitor products, categories and stock levels"
             : "Manage your catalogue, categories and stock levels."}
         </p>
 
         {/* Tabs + Action Button */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center mb-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center mb-6 px-3">
           {/* Tabs */}
           <div className="flex flex-1 bg-white rounded-lg border border-gray-200 p-1 overflow-x-auto">
             {tabs.map((tab) => (
@@ -306,7 +371,7 @@ function ProductsPageContent() {
         {/* ================= CATALOGUE TAB ================= */}
         {activeTab === "Catalogue" && (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 px-3">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">
                   Total products
@@ -351,7 +416,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Search + Filters */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 px-3 mb-4">
               <div className="flex-1 relative">
                 <Search
                   size={16}
@@ -389,8 +454,8 @@ function ProductsPageContent() {
             </div>
 
             {/* Catalogue Table */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
-              <table className="w-full min-w-[720px] text-sm">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto px-3 ">
+              <table className="w-full min-w-[720px] text-sm ">
                 <thead>
                   <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">
                     <th className="px-6 py-4 font-medium whitespace-nowrap">
@@ -478,7 +543,7 @@ function ProductsPageContent() {
         {/* ================= CATEGORIES TAB ================= */}
         {activeTab === "Categories" && (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-3 mb-6">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">
                   Total categories
@@ -529,7 +594,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Category Search */}
-            <div className="mb-4">
+            <div className="mb-4 px-3">
               <div className="flex-1 relative max-w-full">
                 <Search
                   size={16}
@@ -544,7 +609,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Categories Table */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto px-3">
               <table className="w-full min-w-[560px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">
@@ -608,7 +673,7 @@ function ProductsPageContent() {
         {/* ================= LOW STOCK TAB ================= */}
         {activeTab === "Low Stock" && (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 px-3">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">
                   Low-stock products
@@ -641,7 +706,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Low Stock Search + Filters */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-3">
               <div className="flex-1 relative">
                 <Search
                   size={16}
@@ -668,7 +733,7 @@ function ProductsPageContent() {
             </div>
 
             {/* Low Stock Table */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto px-3">
               <table className="w-full min-w-[620px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">

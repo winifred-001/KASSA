@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import Link from "next/link";
 import {
   Bell,
@@ -91,10 +91,7 @@ function StatusBadge({ status }: { status: string }) {
     </span>
   );
 }
- const [selectedChannels, setSelectedChannels] = useState("All Channelss");
-  const [selectedStatuses, setSelectedStatuses] = useState("All statuses");
-  const [selected7Days, setSelected7Days] = useState("Last 7 days");
- 
+
 function FilterButton({
   children,
   width = "140px",
@@ -181,6 +178,39 @@ function SummaryCard({
 
 export default function TransactionsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+   const [selectedChannels, setSelectedChannels] = useState("All Channels");
+  const [selectedStatuses, setSelectedStatuses] = useState("All statuses");
+  const [selected7Days, setSelected7Days] = useState("Last 7 days");
+
+   // Branch selected from the dashboard
+    const [selectedBranch, setSelectedBranch] = useState("Main branch");
+  
+    // Get the selected branch from the dashboard
+    useEffect(() => {
+      const savedBranch = localStorage.getItem("selectedBranch");
+  
+      if (savedBranch) {
+        setSelectedBranch(savedBranch);
+      }
+    }, []);
+  
+    // Listen for branch changes
+    useEffect(() => {
+      const handleBranchChange = () => {
+        const savedBranch = localStorage.getItem("selectedBranch");
+  
+        if (savedBranch) {
+          setSelectedBranch(savedBranch);
+        }
+      };
+  
+      window.addEventListener("storage", handleBranchChange);
+  
+      return () => {
+        window.removeEventListener("storage", handleBranchChange);
+      };
+    }, []);
+ 
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#F5F6F8]">
@@ -208,6 +238,12 @@ export default function TransactionsPage() {
           </div>
 
           <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+            {/* Branch display - no dropdown */}
+            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+              <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                <span className="truncate">{selectedBranch}</span>
+              </div>
+            </div>
             <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
               <Bell size={17} className="text-[#98A1AE]" />
 

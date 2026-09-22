@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import KassaSidebar from "@/components/KassaSidebar";
-import { Loader2, Menu } from "lucide-react";
+import { Loader2, Menu,Bell } from "lucide-react";
 
 const productOptions = [
   { name: "Paracetamol 500mg", currentStock: 8 },
@@ -48,6 +48,35 @@ export default function RestockProductPage() {
     router.push(`/products?${params.toString()}`);
   };
 
+   // Branch selected from the dashboard
+    const [selectedBranch, setSelectedBranch] = useState("Main branch");
+  
+    // Get the selected branch from the dashboard
+    useEffect(() => {
+      const savedBranch = localStorage.getItem("selectedBranch");
+  
+      if (savedBranch) {
+        setSelectedBranch(savedBranch);
+      }
+    }, []);
+  
+    // Listen for branch changes
+    useEffect(() => {
+      const handleBranchChange = () => {
+        const savedBranch = localStorage.getItem("selectedBranch");
+  
+        if (savedBranch) {
+          setSelectedBranch(savedBranch);
+        }
+      };
+  
+      window.addEventListener("storage", handleBranchChange);
+  
+      return () => {
+        window.removeEventListener("storage", handleBranchChange);
+      };
+    }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ================= SIDEBAR ================= */}
@@ -57,34 +86,42 @@ export default function RestockProductPage() {
       />
 
       {/* ================= MAIN CONTENT ================= */}
-      <main className="min-h-screen lg:ml-[198px] p-4 sm:p-6 lg:p-8">
-        {/* ================= HEADER ================= */}
-        <div className="flex items-center gap-3 mb-1">
-          {/* Mobile / Tablet Hamburger */}
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="flex lg:hidden items-center justify-center rounded-md p-1.5 text-gray-600 hover:bg-gray-100 transition-colors shrink-0"
-            aria-label="Open menu"
-          >
-            <Menu size={23} />
-          </button>
+      <main className="min-h-screen lg:ml-[198px] ">
+        <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
 
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-            Products &amp; Inventory
-          </h1>
-        </div>
+            <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
+              Products &amp; Inventory
+            </h1>
+          </div>
 
-        <p className="text-xs sm:text-sm text-gray-400 mb-4">
-          Products &amp; Inventory
-        </p>
+          <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+            <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
+              <Bell size={17} className="text-[#98A1AE]" />
 
-        <p className="text-sm sm:text-base text-gray-500 mb-6">
+              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+            </button>
+
+            <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+              AO
+            </div>
+          </div>
+        </header>
+
+        <p className="text-sm sm:text-base text-gray-500 mb-6 px-3 mt-2">
           Update inventory quantities for products that are running low.
         </p>
 
         {/* ================= CONTENT GRID ================= */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-3">
           {/* ================= FORM ================= */}
           <div className="md:col-span-2 bg-white rounded-xl border border-gray-200 p-4 sm:p-5 md:p-6">
             <h2 className="text-base md:text-lg font-semibold text-gray-900 mb-1">

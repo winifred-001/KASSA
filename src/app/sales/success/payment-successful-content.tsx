@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, Menu } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 
 export default function PaymentSuccessfulContent() {
@@ -27,14 +27,27 @@ export default function PaymentSuccessfulContent() {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <main className="ml-[198px] p-8">
-        <div className="flex items-center justify-between mb-1">
-          <h1 className="text-2xl font-semibold text-gray-900">Payment Successful</h1>
+      <main className="lg:ml-[198px] p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-coln items-center sm:flex-row sm:items-center gap-2 justify-between mb-1">
+          <div className="flex items-center gap-2">
+             <button
+                        type="button"
+                        onClick={() => setSidebarOpen(true)}
+                        className="shrink-0 rounded-md p-1.5 text-gray-600 transition hover:bg-gray-100 lg:hidden"
+                        aria-label="Open menu"
+                      >
+                        <Menu size={22} />
+              </button>
+          
+             <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
+               Payment Successful
+              </h1>
+          </div>
           <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700">
             Main branch
           </button>
         </div>
-        <p className="text-gray-500 mb-8">
+        <p className="text-sm sm:text-base text-gray-500 mb-8">
           Payment confirmed successfully. Your sale has been completed.
         </p>
 
@@ -53,7 +66,7 @@ export default function PaymentSuccessfulContent() {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-6 max-w-4xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-4xl">
           <div className="col-span-2 bg-white rounded-xl border border-gray-200 p-10 flex flex-col items-center text-center">
             <div className="w-16 h-16 rounded-full bg-emerald-600 flex items-center justify-center mb-6">
               <Check size={32} className="text-white" strokeWidth={3} />
@@ -91,7 +104,7 @@ export default function PaymentSuccessfulContent() {
             </button>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className=" bg-white rounded-xl border border-gray-200 p-6">
             <h3 className="text-base font-semibold text-gray-900 mb-4">Sale status</h3>
 
             <div className="space-y-4 mb-6">
