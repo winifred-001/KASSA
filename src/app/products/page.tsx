@@ -1,11 +1,11 @@
 "use client";
-
+ 
 import { useState, useEffect, Suspense } from "react";
 import { Search, Plus, MoreHorizontal, ChevronDown, X, CheckCircle2, Menu } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-
+ 
 type Product = {
   name: string;
   sku: string;
@@ -14,25 +14,25 @@ type Product = {
   stock: number;
   status: "In stock" | "Low stock" | "Out of stock";
 };
-
+ 
 const products: Product[] = [
   { name: "Amoxicillin 500mg", sku: "MED-00142", category: "Medicine", price: "₦4,000", stock: 42, status: "In stock" },
   { name: "Vitamin C 1000mg", sku: "SUP-00231", category: "Supplements", price: "₦6,500", stock: 18, status: "In stock" },
   { name: "Paracetamol 500mg", sku: "MED-00098", category: "Medicine", price: "₦1,200", stock: 4, status: "Low stock" },
 ];
-
+ 
 type Category = {
   name: string;
   products: number;
   stockValue: string;
   status: "Active" | "Inactive";
 };
-
+ 
 const categories: Category[] = [
   { name: "Medicines", products: 64, stockValue: "₦486,500", status: "Active" },
   { name: "Vitamins & supplements", products: 31, stockValue: "₦218,700", status: "Active" },
 ];
-
+ 
 type LowStockProduct = {
   name: string;
   sku: string;
@@ -41,15 +41,15 @@ type LowStockProduct = {
   reorderLevel: number;
   status: "Low stock" | "Out of stock";
 };
-
+ 
 const lowStockProducts: LowStockProduct[] = [
   { name: "Amoxicillin 500mg", sku: "AMX-500", category: "Medicine", currentStock: 8, reorderLevel: 20, status: "Low stock" },
   { name: "Vitamin C 1000mg", sku: "VIT-1000", category: "Supplements", currentStock: 5, reorderLevel: 15, status: "Low stock" },
 ];
-
+ 
 const tabs = ["Catalogue", "Categories", "Low Stock"] as const;
 type Tab = (typeof tabs)[number];
-
+ 
 function StatusBadge({ status }: { status: Product["status"] | Category["status"] | LowStockProduct["status"] }) {
   const styles: Record<string, string> = {
     "In stock": "bg-green-100 text-green-700",
@@ -64,14 +64,60 @@ function StatusBadge({ status }: { status: Product["status"] | Category["status"
     </span>
   );
 }
-
+ 
+function FilterDropdown({
+  selected,
+  options,
+  onSelect,
+}: {
+  selected: string;
+  options: string[];
+  onSelect: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+ 
+  return (
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex items-center gap-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50"
+      >
+        {selected}
+        <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+ 
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
+          {options.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => {
+                onSelect(option);
+                setOpen(false);
+              }}
+              className="w-full rounded-md px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+ 
 function ProductsPageContent() {
   const [query, setQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedStock, setSelectedStock] = useState("All stock");
+  const [selectedSort, setSelectedSort] = useState("Sort");
+ 
   const searchParams = useSearchParams();
   const router = useRouter();
-
+ 
   // Derive initial state from the URL once, at mount — not via setState in an effect.
   const [activeTab, setActiveTab] = useState<Tab>(() =>
     searchParams.get("added") === "restock" ? "Low Stock" : "Catalogue"
@@ -85,38 +131,38 @@ function ProductsPageContent() {
   const [restockedUnits, setRestockedUnits] = useState(
     () => searchParams.get("units") || ""
   );
-
+ 
   // This effect only touches the external system (the URL) — no setState cascade.
   useEffect(() => {
     if (searchParams.get("added") === "restock") {
       router.replace("/products");
     }
   }, [searchParams, router]);
-
+ 
   useEffect(() => {
     if (!showRestockToast) return;
     const timer = setTimeout(() => setShowRestockToast(false), 4000);
     return () => clearTimeout(timer);
   }, [showRestockToast]);
-
+ 
   const filtered = products.filter((p) =>
     `${p.name} ${p.sku} ${p.category}`.toLowerCase().includes(query.toLowerCase())
   );
-
+ 
   const totalProducts = products.length;
   const numCategories = new Set(products.map((p) => p.category)).size;
   const lowStock = products.filter((p) => p.status === "Low stock").length;
-
+ 
   const headerButtonLabel =
     activeTab === "Catalogue" ? "Add product" : activeTab === "Categories" ? "Add category" : "Restock product";
-
+ 
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
       <KassaSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-
+ 
       <main className="min-h-screen lg:ml-[198px] p-4 sm:p-6 lg:p-8">
         {/* Mobile header row with menu button */}
         <div className="flex items-center gap-3 mb-1">
@@ -128,7 +174,7 @@ function ProductsPageContent() {
           >
             <Menu size={22} />
           </button>
-
+ 
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
             Products & Inventory
           </h1>
@@ -138,7 +184,7 @@ function ProductsPageContent() {
             ? "Monitor products, categories and stock levels"
             : "Manage your catalogue, categories and stock levels."}
         </p>
-
+ 
         {/* Tabs + action */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center mb-6">
           <div className="flex flex-1 bg-white rounded-lg border border-gray-200 p-1 overflow-x-auto">
@@ -156,7 +202,7 @@ function ProductsPageContent() {
               </button>
             ))}
           </div>
-
+ 
           <Link
             href={
               activeTab === "Catalogue"
@@ -171,7 +217,7 @@ function ProductsPageContent() {
             {headerButtonLabel}
           </Link>
         </div>
-
+ 
         {/* ---------------- CATALOGUE TAB ---------------- */}
         {activeTab === "Catalogue" && (
           <>
@@ -195,7 +241,7 @@ function ProductsPageContent() {
                 </div>
               </div>
             </div>
-
+ 
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <div className="flex-1 relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -206,22 +252,29 @@ function ProductsPageContent() {
                   className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
                 />
               </div>
+ 
               <div className="-mx-4 flex gap-3 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-                <button className="flex shrink-0 items-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50">
-                  All categories <ChevronDown size={14} />
-                </button>
-                <button className="flex shrink-0 items-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50">
-                  All stock <ChevronDown size={14} />
-                </button>
-                <button className="flex shrink-0 items-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50">
-                  Sort <ChevronDown size={14} />
-                </button>
+                <FilterDropdown
+                  selected={selectedCategory}
+                  options={["All Categories", "Medicines","Personal Care", "Supplements"]}
+                  onSelect={setSelectedCategory}
+                />
+                <FilterDropdown
+                  selected={selectedStock}
+                  options={["All stock", "In stock", "Low stock", "Out of stock"]}
+                  onSelect={setSelectedStock}
+                />
+                <FilterDropdown
+                  selected={selectedSort}
+                  options={["Newest first", "Name (A–Z)", "Price (low–high)", "Price (high–low)"]}
+                  onSelect={setSelectedSort}
+                />
                 <span className="flex shrink-0 items-center px-2 text-sm text-gray-400 whitespace-nowrap">
                   {filtered.length} products
                 </span>
               </div>
             </div>
-
+ 
             <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
@@ -266,7 +319,7 @@ function ProductsPageContent() {
             </div>
           </>
         )}
-
+ 
         {/* ---------------- CATEGORIES TAB ---------------- */}
         {activeTab === "Categories" && (
           <>
@@ -293,7 +346,7 @@ function ProductsPageContent() {
                 </div>
               </div>
             </div>
-
+ 
             <div className="mb-4">
               <div className="flex-1 relative max-w-full">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -303,7 +356,7 @@ function ProductsPageContent() {
                 />
               </div>
             </div>
-
+ 
             <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
               <table className="w-full min-w-[560px] text-sm">
                 <thead>
@@ -336,7 +389,7 @@ function ProductsPageContent() {
             </div>
           </>
         )}
-
+ 
         {/* ---------------- LOW STOCK TAB ---------------- */}
         {activeTab === "Low Stock" && (
           <>
@@ -356,7 +409,7 @@ function ProductsPageContent() {
                 </p>
               </div>
             </div>
-
+ 
             <div className="flex flex-col sm:flex-row gap-3 mb-4">
               <div className="flex-1 relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -374,7 +427,7 @@ function ProductsPageContent() {
                 </button>
               </div>
             </div>
-
+ 
             <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
               <table className="w-full min-w-[620px] text-sm">
                 <thead>
@@ -407,7 +460,7 @@ function ProductsPageContent() {
           </>
         )}
       </main>
-
+ 
       {showRestockToast && (
         <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-lg">
           <CheckCircle2 className="text-[#0F4C3A]" size={20} />
@@ -427,7 +480,7 @@ function ProductsPageContent() {
     </div>
   );
 }
-
+ 
 export default function ProductsPage() {
   return (
     <Suspense fallback={null}>

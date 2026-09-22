@@ -91,7 +91,10 @@ function StatusBadge({ status }: { status: string }) {
     </span>
   );
 }
-
+ const [selectedChannels, setSelectedChannels] = useState("All Channelss");
+  const [selectedStatuses, setSelectedStatuses] = useState("All statuses");
+  const [selected7Days, setSelected7Days] = useState("Last 7 days");
+ 
 function FilterButton({
   children,
   width = "140px",
@@ -108,6 +111,49 @@ function FilterButton({
 
       <ChevronDown size={17} className="ml-2 shrink-0 text-[#70798A]" />
     </button>
+  );
+}
+
+function FilterDropdown({
+  selected,
+  options,
+  onSelect,
+}: {
+  selected: string;
+  options: string[];
+  onSelect: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+ 
+  return (
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex items-center gap-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50"
+      >
+        {selected}
+        <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+ 
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
+          {options.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => {
+                onSelect(option);
+                setOpen(false);
+              }}
+              className="w-full rounded-md px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -194,17 +240,23 @@ export default function TransactionsPage() {
 
             {/* Filter row: horizontal scroll on mobile instead of wrapping/overflow */}
             <div className="-mx-4 flex gap-[10px] overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:gap-[15px] sm:overflow-visible sm:px-0">
-              <FilterButton width="140px">
-                <span>All channels</span>
-              </FilterButton>
+              <FilterDropdown
+                selected={selectedChannels}
+                options={["All Channels", "Transfer", "Cash", "POS", "USSD", "Card", "Kassa Wallet"]}
+                onSelect={setSelectedChannels}
+              />
 
-              <FilterButton width="140px">
-                <span>All statuses</span>
-              </FilterButton>
+              <FilterDropdown
+                selected={selectedStatuses}
+                options={["All statuses", "Successful", "Failed", "Pending"]}
+                onSelect={setSelectedStatuses}
+              />
 
-              <FilterButton width="160px">
-                <span>Last 7 days</span>
-              </FilterButton>
+              <FilterDropdown
+                selected={selected7Days}
+                options={["Last 7 days", "Last 30 days", "This month", "This year"]}
+                onSelect={setSelected7Days}
+              />
             </div>
 
             <button className="h-[42px] w-full rounded-[8px] border border-[#D4D9E0] bg-white px-[17px] text-[13px] font-semibold text-[#394355] sm:ml-auto sm:w-auto">
