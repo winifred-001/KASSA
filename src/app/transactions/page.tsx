@@ -92,25 +92,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function FilterButton({
-  children,
-  width = "140px",
-}: {
-  children: React.ReactNode;
-  width?: string;
-}) {
-  return (
-    <button
-      style={{ width }}
-      className="flex h-[42px] shrink-0 items-center justify-between rounded-[8px] border border-[#D4D9E0] bg-white px-[15px] text-[13px] text-[#3D4656]"
-    >
-      {children}
-
-      <ChevronDown size={17} className="ml-2 shrink-0 text-[#70798A]" />
-    </button>
-  );
-}
-
 function FilterDropdown({
   selected,
   options,
@@ -178,7 +159,7 @@ function SummaryCard({
 
 export default function TransactionsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-   const [selectedChannels, setSelectedChannels] = useState("All Channels");
+  const [selectedChannels, setSelectedChannels] = useState("All Channels");
   const [selectedStatuses, setSelectedStatuses] = useState("All statuses");
   const [selected7Days, setSelected7Days] = useState("Last 7 days");
 
@@ -275,7 +256,7 @@ export default function TransactionsPage() {
             </div>
 
             {/* Filter row: horizontal scroll on mobile instead of wrapping/overflow */}
-            <div className="-mx-4 flex gap-[10px] overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:gap-[15px] sm:overflow-visible sm:px-0">
+            <div className="-mx-4 flex gap-[10px] overflow-visible px-4 sm:mx-0 sm:flex-wrap sm:gap-[15px] sm:overflow-visible sm:px-0">
               <FilterDropdown
                 selected={selectedChannels}
                 options={["All Channels", "Transfer", "Cash", "POS", "USSD", "Card", "Kassa Wallet"]}

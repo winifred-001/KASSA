@@ -118,7 +118,7 @@ function CustomersPageContent() {
                 </header>
        
  
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 mt-2 px-3 mt-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 mt-2 px-8 mt-4">
           <div>
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">Manage customers</h2>
             <p className="text-gray-500 text-sm sm:text-base">View, search and manage your customer records.</p>
@@ -133,7 +133,7 @@ function CustomersPageContent() {
         </div>
  
         {/* Summary cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-8">
           <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
             <p className="text-sm text-gray-500 mb-2">Total customers</p>
             <div className="flex items-baseline gap-2 flex-wrap">
@@ -165,7 +165,7 @@ function CustomersPageContent() {
         </div>
  
         {/* Search + filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-4 px-3">
+        <div className="flex flex-col sm:flex-row gap-3 mb-4 px-8">
           <div className="flex-1 relative">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -193,7 +193,7 @@ function CustomersPageContent() {
         </div>
  
         {/* Customers table */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto px-3">
+        <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto mx-8">
           <table className="w-full min-w-[820px] text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">

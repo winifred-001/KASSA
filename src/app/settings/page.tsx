@@ -180,7 +180,7 @@ function SettingsPageContent() {
 
   if (active === "Delete Account" && deleteStep === 2) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 ">
         <div className="bg-white rounded-xl border border-gray-200 p-10 max-w-2xl w-full text-center">
           <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
             <Check size={28} className="text-green-600" />
@@ -226,17 +226,19 @@ function SettingsPageContent() {
               records.
             </p>
           </div>
-
+          
+          <Link href="/login">
           <button
-            onClick={() => {
+           /* onClick={() => {
               setDeleteStep(0);
               setDeleteConfirmText("");
               setActive("Business profile");
-            }}
+            }}*/
             className="w-full py-2.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-sm font-medium transition-colors mb-4"
           >
             Back to Sign In
           </button>
+          </Link>
 
           <p className="text-xs text-gray-400">
             Need help?{" "}
@@ -316,7 +318,7 @@ function SettingsPageContent() {
                         </header>
         
 
-        <div className="flex flex-col md:flex-row gap-4 md:gap-6 px-3">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 px-8">
           <aside className="w-full md:w-64 shrink-0">
             <nav className="bg-white rounded-xl border border-gray-200 p-2 overflow-x-auto">
               {navItems.map((item) => (

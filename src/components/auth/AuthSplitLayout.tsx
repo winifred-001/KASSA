@@ -13,13 +13,13 @@ export default function AuthSplitLayout({ children }: AuthSplitLayoutProps) {
         <div>
           <Logo variant="light" />
 
-          <h1 className="mt-10 text-3xl font-bold leading-tight">
-            Banks and Fintechs move money.{" "}
-            <span className="text-brand-100">Kassa makes it understandable.</span>
+          <h1 className="mt-10 text-[40px] font-bold leading-tight">
+            Banks and Fintechs<br/> move money.{" "}<br/>
+            <span className="text-brand-100 text-[34px]">Kassa makes it<br/> understandable.</span>
           </h1>
 
           <p className="mt-4 max-w-md text-sm text-brand-100/90">
-            One reconciled dashboard for every bank transfer, POS, USSD, card,
+            One reconciled dashboard for every bank transfer,<br/> POS, USSD, card,
             cash, and wallet payment.
           </p>
 
@@ -37,7 +37,7 @@ export default function AuthSplitLayout({ children }: AuthSplitLayoutProps) {
           </ul>
         </div>
 
-        <blockquote className="rounded-lg bg-brand-700/40 p-5">
+        <blockquote className="rounded-lg bg-brand-700/40 p-5 mt-20">
           <p className="text-sm italic text-brand-50">
             &ldquo;I don&apos;t need faster payments. I need to know, at a
             glance, that every naira coming in is accounted for.&rdquo;

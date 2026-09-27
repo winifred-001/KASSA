@@ -68,7 +68,7 @@ export default function AddBranchPage() {
     <div className="min-h-screen bg-gray-50">
       <KassaSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
  
-      <main className="lg:ml-[198px] p-4 sm:p-6 lg:p-8">
+      <main className="lg:ml-[198px] ">
          {/* Header */}
                 <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
                   <div className="flex min-w-0 items-center gap-3">
@@ -82,7 +82,7 @@ export default function AddBranchPage() {
                     </button>
         
                     <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
-                        Staff &amp; Branches
+                        Add branch
                     </h1>
                   </div>
         
@@ -105,29 +105,12 @@ export default function AddBranchPage() {
                     </div>
                   </div>
                 </header>
-        <div className="flex items-center gap-3 mb-1">
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(true)}
-            className="shrink-0 rounded-md p-1.5 text-gray-600 transition hover:bg-gray-100 lg:hidden"
-            aria-label="Open menu"
-          >
-            <Menu size={22} />
-          </button>
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-            Staff &amp; Branches
-          </h1>
-        </div>
-        <p className="text-sm sm:text-base text-gray-500 mb-6">
-          Manage your team, branches, roles and access.
-        </p>
- 
-        <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">Add branch</h2>
-        <p className="text-sm sm:text-base text-gray-500 mb-6">
+        
+        <p className="text-sm sm:text-base text-gray-500 mb-6 mt-4 px-3">
           Create a new business location and assign staff to it.
         </p>
  
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-3">
           <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
               Branch information

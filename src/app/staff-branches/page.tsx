@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState,useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   Search,
@@ -8,11 +8,11 @@ import {
   Plus,
   Loader2,
   CheckCircle2,
-  X ,
+  X,
   MoreHorizontal,
   ChevronDown,
   Menu,
-  Bell
+  Bell,
 } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 import Link from "next/link";
@@ -27,9 +27,27 @@ type StaffMember = {
 };
 
 const staff: StaffMember[] = [
-  { name: "Sarah Okafor", email: "sarah@hefa.com", role: "Cashier", branch: "Main Branch", status: "Active" },
-  { name: "David Ibrahim", email: "david@hefa.com", role: "Branch Manager", branch: "Wuse Branch", status: "Active" },
-  { name: "Amina Bello", email: "amina@hefa.com", role: "Cashier", branch: "Main Branch", status: "Pending" },
+  {
+    name: "Sarah Okafor",
+    email: "sarah@kassa.com",
+    role: "Cashier",
+    branch: "Main Branch",
+    status: "Active",
+  },
+  {
+    name: "David Ibrahim",
+    email: "david@kassa.com",
+    role: "Branch Manager",
+    branch: "Wuse Branch",
+    status: "Active",
+  },
+  {
+    name: "Amina Bello",
+    email: "amina@kassa.com",
+    role: "Cashier",
+    branch: "Main Branch",
+    status: "Pending",
+  },
 ];
 
 // ---------- Branches data ----------
@@ -42,8 +60,20 @@ type Branch = {
 };
 
 const branches: Branch[] = [
-  { name: "Main Branch", location: "Garki, Abuja", staffCount: 4, status: "Active", lastActivity: "2 min ago" },
-  { name: "Wuse Branch", location: "Wuse II, Abuja", staffCount: 2, status: "Active", lastActivity: "1 hr ago" },
+  {
+    name: "Main Branch",
+    location: "Garki, Abuja",
+    staffCount: 4,
+    status: "Active",
+    lastActivity: "2 min ago",
+  },
+  {
+    name: "Wuse Branch",
+    location: "Wuse II, Abuja",
+    staffCount: 2,
+    status: "Active",
+    lastActivity: "1 hr ago",
+  },
 ];
 
 // ---------- Roles data ----------
@@ -55,27 +85,107 @@ type Role = {
 };
 
 const roles: Role[] = [
-  { name: "Owner", description: "Full business access and administration", staff: 1, access: "Full access" },
-  { name: "Branch Manager", description: "Manages branch operations and staff", staff: 1, access: "High" },
-  { name: "Cashier", description: "Handles sales and customer payments", staff: 2, access: "Limited" },
-  { name: "Accountant", description: "Manages reports and reconciliation", staff: 1, access: "Finance" },
-  { name: "Inventory Manager", description: "Manages products and stock levels", staff: 1, access: "Inventory" },
+  {
+    name: "Owner",
+    description: "Full business access and administration",
+    staff: 1,
+    access: "Full access",
+  },
+  {
+    name: "Branch Manager",
+    description: "Manages branch operations and staff",
+    staff: 1,
+    access: "High",
+  },
+  {
+    name: "Cashier",
+    description: "Handles sales and customer payments",
+    staff: 2,
+    access: "Limited",
+  },
+  {
+    name: "Accountant",
+    description: "Manages reports and reconciliation",
+    staff: 1,
+    access: "Finance",
+  },
+  {
+    name: "Inventory Manager",
+    description: "Manages products and stock levels",
+    staff: 1,
+    access: "Inventory",
+  },
 ];
 
 const tabs = ["Staff", "Branches", "Roles & Permissions"] as const;
 type Tab = (typeof tabs)[number];
 
-function StatusBadge({ status }: { status: StaffMember["status"] | Branch["status"] }) {
+function StatusBadge({
+  status,
+}: {
+  status: StaffMember["status"] | Branch["status"];
+}) {
   const styles: Record<string, string> = {
     Active: "bg-green-100 text-green-700",
     Pending: "bg-yellow-100 text-yellow-700",
     Suspended: "bg-red-100 text-red-700",
     Inactive: "bg-gray-100 text-gray-500",
   };
+
   return (
-    <span className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${styles[status]}`}>
+    <span
+      className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${styles[status]}`}
+    >
       {status}
     </span>
+  );
+}
+
+// ---------- Reusable dropdown ----------
+function FilterDropdown({
+  selected,
+  options,
+  onSelect,
+}: {
+  selected: string;
+  options: string[];
+  onSelect: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative w-full sm:w-auto shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex w-full sm:w-auto items-center justify-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50"
+      >
+        {selected}
+        <ChevronDown size={14} />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 sm:right-0 sm:left-auto top-full z-30 mt-1 w-full sm:min-w-[170px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+          {options.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => {
+                onSelect(option);
+                setOpen(false);
+              }}
+              className={`block w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${
+                selected === option
+                  ? "bg-emerald-50 text-emerald-700"
+                  : "text-gray-700"
+              }`}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -85,6 +195,18 @@ function StaffBranchesContent() {
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Staff filters
+  const [staffStatus, setStaffStatus] = useState("Filter");
+
+  // Branch filters
+  const [branchQuery, setBranchQuery] = useState("");
+  const [branchStatus, setBranchStatus] = useState("Status");
+  const [branchSort, setBranchSort] = useState("Sort: Recent");
+
+  // Role filters
+  const [roleQuery, setRoleQuery] = useState("");
+  const [roleAccess, setRoleAccess] = useState("All access levels");
+
   const [inviteForm, setInviteForm] = useState({
     fullName: "",
     email: "",
@@ -93,122 +215,216 @@ function StaffBranchesContent() {
     message: "",
   });
 
-  const handleInviteChange = (field: keyof typeof inviteForm, value: string) => {
+  const handleInviteChange = (
+    field: keyof typeof inviteForm,
+    value: string
+  ) => {
     setInviteForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const filteredStaff = staff.filter((s) =>
-    `${s.name} ${s.email} ${s.role}`.toLowerCase().includes(query.toLowerCase())
-  );
+  // ---------- Staff filtering ----------
+  const filteredStaff = staff.filter((s) => {
+    const search = query.toLowerCase().trim();
+
+    const matchesSearch =
+      `${s.name} ${s.email} ${s.role} ${s.branch}`
+        .toLowerCase()
+        .includes(search);
+
+    const matchesStatus =
+      staffStatus === "Filter" || s.status === staffStatus;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  // ---------- Branch filtering ----------
+  const filteredBranches = branches
+    .filter((b) => {
+      const search = branchQuery.toLowerCase().trim();
+
+      const matchesSearch =
+        `${b.name} ${b.location} ${b.status}`
+          .toLowerCase()
+          .includes(search);
+
+      const matchesStatus =
+        branchStatus === "Status" || b.status === branchStatus;
+
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      if (branchSort === "Name A-Z") {
+        return a.name.localeCompare(b.name);
+      }
+
+      if (branchSort === "Name Z-A") {
+        return b.name.localeCompare(a.name);
+      }
+
+      if (branchSort === "Sort: Recent") {
+        const getMinutes = (activity: string) => {
+          const [value, unit] = activity.split(" ");
+
+          const number = Number(value);
+
+          if (unit.startsWith("min")) {
+            return number;
+          }
+
+          if (unit.startsWith("hr")) {
+            return number * 60;
+          }
+
+          return 999999;
+        };
+
+        return getMinutes(a.lastActivity) - getMinutes(b.lastActivity);
+      }
+
+      return 0;
+    });
+
+  // ---------- Role filtering ----------
+  const filteredRoles = roles.filter((r) => {
+    const search = roleQuery.toLowerCase().trim();
+
+    const matchesSearch =
+      `${r.name} ${r.description} ${r.access}`
+        .toLowerCase()
+        .includes(search);
+
+    const matchesAccess =
+      roleAccess === "All access levels" || r.access === roleAccess;
+
+    return matchesSearch && matchesAccess;
+  });
 
   const totalStaff = staff.length;
   const active = staff.filter((s) => s.status === "Active").length;
   const pending = staff.filter((s) => s.status === "Pending").length;
 
   const totalBranches = branches.length;
-  const activeBranches = branches.filter((b) => b.status === "Active").length;
-  const staffAcrossBranches = branches.reduce((sum, b) => sum + b.staffCount, 0);
+  const activeBranches = branches.filter(
+    (b) => b.status === "Active"
+  ).length;
+  const staffAcrossBranches = branches.reduce(
+    (sum, b) => sum + b.staffCount,
+    0
+  );
 
   const totalRoles = roles.length;
   const staffAssigned = roles.reduce((sum, r) => sum + r.staff, 0);
 
   const headerButtonLabel =
-    activeTab === "Staff" ? "Invite Staff" : activeTab === "Branches" ? "Add Branch" : "Add Role";
+    activeTab === "Staff"
+      ? "Invite Staff"
+      : activeTab === "Branches"
+      ? "Add Branch"
+      : "Add Role";
 
- const [showBranchToast, setShowBranchToast] = useState(false);
- const [showRoleToast, setShowRoleToast] = useState(false);
- const [showStaffToast, setShowStaffToast] = useState(false);
+  const [showBranchToast, setShowBranchToast] = useState(false);
+  const [showRoleToast, setShowRoleToast] = useState(false);
+  const [showStaffToast, setShowStaffToast] = useState(false);
 
-  
- const searchParams = useSearchParams();
- const router = useRouter();
- const [saving, setSaving] = useState(false); 
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [saving, setSaving] = useState(false);
 
- // Branch toast
- useEffect(() => {
-  const added = searchParams.get("added");
-  if (added === "branch") {
-    setShowBranchToast(true);
-    setActiveTab("Branches");
-    router.replace("/staff-branches");
-  }
-}, [searchParams, router]);
+  // Branch toast
+  useEffect(() => {
+    const added = searchParams.get("added");
 
- useEffect(() => {
-  if (!showBranchToast) return;
-  const timer = setTimeout(() => setShowBranchToast(false), 4000);
-  return () => clearTimeout(timer);
-}, [showBranchToast]);
+    if (added === "branch") {
+      setShowBranchToast(true);
+      setActiveTab("Branches");
+      router.replace("/staff-branches");
+    }
+  }, [searchParams, router]);
 
-// Role toast
-useEffect(() => {
-  const added = searchParams.get("added");
-  if (added === "role") {
-    setShowRoleToast(true);
-    setActiveTab("Roles & Permissions");
-    router.replace("/staff-branches");
-  }
-}, [searchParams, router]);
+  useEffect(() => {
+    if (!showBranchToast) return;
 
-useEffect(() => {
-  if (!showRoleToast) return;
-  const timer = setTimeout(() => setShowRoleToast(false), 4000);
-  return () => clearTimeout(timer);
-}, [showRoleToast]);
+    const timer = setTimeout(() => setShowBranchToast(false), 4000);
 
-// Staff toast
- useEffect(() => {
-  const added = searchParams.get("added");
-  if (added === "staff") {
+    return () => clearTimeout(timer);
+  }, [showBranchToast]);
+
+  // Role toast
+  useEffect(() => {
+    const added = searchParams.get("added");
+
+    if (added === "role") {
+      setShowRoleToast(true);
+      setActiveTab("Roles & Permissions");
+      router.replace("/staff-branches");
+    }
+  }, [searchParams, router]);
+
+  useEffect(() => {
+    if (!showRoleToast) return;
+
+    const timer = setTimeout(() => setShowRoleToast(false), 4000);
+
+    return () => clearTimeout(timer);
+  }, [showRoleToast]);
+
+  // Staff toast
+  useEffect(() => {
+    const added = searchParams.get("added");
+
+    if (added === "staff") {
+      setShowStaffToast(true);
+      router.replace("/staff-branches");
+    }
+  }, [searchParams, router]);
+
+  useEffect(() => {
+    if (!showStaffToast) return;
+
+    const timer = setTimeout(() => setShowStaffToast(false), 4000);
+
+    return () => clearTimeout(timer);
+  }, [showStaffToast]);
+
+  const handleSave = async () => {
+    setSaving(true);
+
+    // TODO: replace with your real API call to send the invite
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    setSaving(false);
+    setShowInviteForm(false);
     setShowStaffToast(true);
-    router.replace("/staff-branches");
-  }
-}, [searchParams, router]);
+  };
 
-useEffect(() => {
-  if (!showStaffToast) return;
-  const timer = setTimeout(() => setShowStaffToast(false), 4000);
-  return () => clearTimeout(timer);
-}, [showStaffToast]);
+  // Branch selected from the dashboard
+  const [selectedBranch, setSelectedBranch] = useState("Main branch");
 
- const handleSave = async () => {
-  setSaving(true);
-  // TODO: replace with your real API call to send the invite
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  setSaving(false);
+  // Get the selected branch from the dashboard
+  useEffect(() => {
+    const savedBranch = localStorage.getItem("selectedBranch");
 
-  setShowInviteForm(false);
-  setShowStaffToast(true);
-};
+    if (savedBranch) {
+      setSelectedBranch(savedBranch);
+    }
+  }, []);
 
-// Branch selected from the dashboard
-      const [selectedBranch, setSelectedBranch] = useState("Main branch");
-    
-      // Get the selected branch from the dashboard
-      useEffect(() => {
-        const savedBranch = localStorage.getItem("selectedBranch");
-    
-        if (savedBranch) {
-          setSelectedBranch(savedBranch);
-        }
-      }, []);
-    
-      // Listen for branch changes
-      useEffect(() => {
-        const handleBranchChange = () => {
-          const savedBranch = localStorage.getItem("selectedBranch");
-    
-          if (savedBranch) {
-            setSelectedBranch(savedBranch);
-          }
-        };
-    
-        window.addEventListener("storage", handleBranchChange);
-    
-        return () => {
-          window.removeEventListener("storage", handleBranchChange);
-        };
-      }, []);
+  // Listen for branch changes
+  useEffect(() => {
+    const handleBranchChange = () => {
+      const savedBranch = localStorage.getItem("selectedBranch");
+
+      if (savedBranch) {
+        setSelectedBranch(savedBranch);
+      }
+    };
+
+    window.addEventListener("storage", handleBranchChange);
+
+    return () => {
+      window.removeEventListener("storage", handleBranchChange);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
@@ -217,50 +433,49 @@ useEffect(() => {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <main className="min-h-screen lg:ml-[198px] ">
-          {/* Header */}
-                        <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
-                          <div className="flex min-w-0 items-center gap-3">
-                            <button
-                              type="button"
-                              onClick={() => setSidebarOpen(true)}
-                              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
-                              aria-label="Open menu"
-                            >
-                              <Menu size={22} />
-                            </button>
-                
-                            <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
-                                Staff & Branches
-                            </h1>
-                          </div>
-                
-                          <div className="flex shrink-0 items-center gap-3 sm:gap-5">
-                              {/* Branch display - no dropdown */}
-                            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
-                              <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
-                                <span className="truncate">{selectedBranch}</span>
-                              </div>
-                            </div>
-                
-                            <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
-                              <Bell size={17} className="text-[#98A1AE]" />
-                
-                              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
-                            </button>
-                
-                            <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
-                              AO
-                            </div>
-                          </div>
-                        </header>
+      <main className="min-h-screen lg:ml-[198px]">
+        {/* Header */}
+        <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
 
-        <p className="text-gray-500 mb-6 text-sm sm:text-base px-3 mt-4">
+            <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
+              Staff & Branches
+            </h1>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+            {/* Branch display - no dropdown */}
+            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+              <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                <span className="truncate">{selectedBranch}</span>
+              </div>
+            </div>
+
+            <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
+              <Bell size={17} className="text-[#98A1AE]" />
+              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+            </button>
+
+            <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+              AO
+            </div>
+          </div>
+        </header>
+
+        <p className="text-gray-500 mb-6 text-sm sm:text-base px-8 mt-4">
           Manage your team, branches, and access permissions.
         </p>
 
         {/* Tabs + action button */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center mb-6 px-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center mb-6 px-8">
           <div className="flex flex-1 bg-white rounded-lg border border-gray-200 p-1 overflow-x-auto">
             {tabs.map((tab) => (
               <button
@@ -290,7 +505,11 @@ useEffect(() => {
             </button>
           ) : (
             <Link
-              href={activeTab === "Branches" ? "/staff-branches/branches/add" : "/staff-branches/roles/add"}
+              href={
+                activeTab === "Branches"
+                  ? "/staff-branches/branches/add"
+                  : "/staff-branches/roles/add"
+              }
               className="flex items-center justify-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors shrink-0"
             >
               <Plus size={16} />
@@ -302,27 +521,47 @@ useEffect(() => {
         {/* ---------------- STAFF TAB ---------------- */}
         {activeTab === "Staff" && !showInviteForm && (
           <>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-3">Staff</h2>
-            <p className="text-gray-500 mb-4 text-sm sm:text-base px-3">Manage staff members and their access.</p>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-8">
+              Staff
+            </h2>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 px-3">
+            <p className="text-gray-500 mb-4 text-sm sm:text-base px-8">
+              Manage staff members and their access.
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 px-8">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">Total staff</p>
-                <p className="text-xl sm:text-2xl font-semibold text-gray-900">{totalStaff}</p>
+                <p className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  {totalStaff}
+                </p>
               </div>
+
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">Active</p>
-                <p className="text-xl sm:text-2xl font-semibold text-emerald-700">{active}</p>
+                <p className="text-xl sm:text-2xl font-semibold text-emerald-700">
+                  {active}
+                </p>
               </div>
+
               <div className="col-span-2 sm:col-span-1 bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-                <p className="text-sm text-gray-500 mb-2">Pending invites</p>
-                <p className="text-xl sm:text-2xl font-semibold text-amber-500">{pending}</p>
+                <p className="text-sm text-gray-500 mb-2">
+                  Pending invites
+                </p>
+                <p className="text-xl sm:text-2xl font-semibold text-amber-500">
+                  {pending}
+                </p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-3">
+            {/* Staff search + filter */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-8">
               <div className="flex-1 relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -330,35 +569,64 @@ useEffect(() => {
                   className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
                 />
               </div>
-              <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50 shrink-0">
-                <Filter size={16} />
-                Filter
-              </button>
+
+              <FilterDropdown
+               
+                selected={staffStatus}
+                options={["Filter", "Active", "Pending", "Suspended"]}
+                onSelect={setStaffStatus}
+              />
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto px-3">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto mx-8">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Staff Member</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Role</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Branch</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Status</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Action</th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Staff Member
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Role
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Branch
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Action
+                    </th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {filteredStaff.map((member) => (
-                    <tr key={member.email} className="border-b border-gray-50 last:border-0">
+                    <tr
+                      key={member.email}
+                      className="border-b border-gray-50 last:border-0"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <p className="font-medium text-gray-900">{member.name}</p>
-                        <p className="text-gray-500 text-xs">{member.email}</p>
+                        <p className="font-medium text-gray-900">
+                          {member.name}
+                        </p>
+                        <p className="text-gray-500 text-xs">
+                          {member.email}
+                        </p>
                       </td>
-                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">{member.role}</td>
-                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">{member.branch}</td>
+
+                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
+                        {member.role}
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
+                        {member.branch}
+                      </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         <StatusBadge status={member.status} />
                       </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button className="text-gray-400 hover:text-gray-600">
                           <MoreHorizontal size={18} />
@@ -366,9 +634,13 @@ useEffect(() => {
                       </td>
                     </tr>
                   ))}
+
                   {filteredStaff.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
+                      <td
+                        colSpan={5}
+                        className="px-6 py-8 text-center text-gray-400"
+                      >
                         No staff found.
                       </td>
                     </tr>
@@ -382,14 +654,20 @@ useEffect(() => {
         {/* ---------------- INVITE STAFF FORM ---------------- */}
         {activeTab === "Staff" && showInviteForm && (
           <>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-3">Invite Staff</h2>
-            <p className="text-gray-500 mb-6 text-sm sm:text-base px-3">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-8">
+              Invite Staff
+            </h2>
+
+            <p className="text-gray-500 mb-6 text-sm sm:text-base px-8">
               Send an invitation to a staff member to join your Kassa account.
             </p>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-8">
               <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5 sm:p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">Staff details</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  Staff details
+                </h3>
+
                 <p className="text-sm text-gray-500 mb-5">
                   Enter the staff member&apos;s details and assign their access.
                 </p>
@@ -399,9 +677,12 @@ useEffect(() => {
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
                       Full name <span className="text-red-500">*</span>
                     </label>
+
                     <input
                       value={inviteForm.fullName}
-                      onChange={(e) => handleInviteChange("fullName", e.target.value)}
+                      onChange={(e) =>
+                        handleInviteChange("fullName", e.target.value)
+                      }
                       placeholder="e.g. Sarah Okafor"
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
                     />
@@ -411,9 +692,12 @@ useEffect(() => {
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
                       Email address <span className="text-red-500">*</span>
                     </label>
+
                     <input
                       value={inviteForm.email}
-                      onChange={(e) => handleInviteChange("email", e.target.value)}
+                      onChange={(e) =>
+                        handleInviteChange("email", e.target.value)
+                      }
                       placeholder="staff@example.com"
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
                     />
@@ -424,12 +708,16 @@ useEffect(() => {
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Role <span className="text-red-500">*</span>
                       </label>
+
                       <select
                         value={inviteForm.role}
-                        onChange={(e) => handleInviteChange("role", e.target.value)}
+                        onChange={(e) =>
+                          handleInviteChange("role", e.target.value)
+                        }
                         className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm bg-white text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-700"
                       >
                         <option value="">Select role</option>
+
                         {roles.map((r) => (
                           <option key={r.name} value={r.name}>
                             {r.name}
@@ -437,16 +725,21 @@ useEffect(() => {
                         ))}
                       </select>
                     </div>
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Branch <span className="text-red-500">*</span>
                       </label>
+
                       <select
                         value={inviteForm.branch}
-                        onChange={(e) => handleInviteChange("branch", e.target.value)}
+                        onChange={(e) =>
+                          handleInviteChange("branch", e.target.value)
+                        }
                         className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm bg-white text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-700"
                       >
                         <option value="">Select branch</option>
+
                         {branches.map((b) => (
                           <option key={b.name} value={b.name}>
                             {b.name}
@@ -458,11 +751,17 @@ useEffect(() => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Personal message <span className="text-gray-400 font-normal">(optional)</span>
+                      Personal message{" "}
+                      <span className="text-gray-400 font-normal">
+                        (optional)
+                      </span>
                     </label>
+
                     <textarea
                       value={inviteForm.message}
-                      onChange={(e) => handleInviteChange("message", e.target.value)}
+                      onChange={(e) =>
+                        handleInviteChange("message", e.target.value)
+                      }
                       placeholder="Add a short message to include with the invitation..."
                       rows={3}
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 resize-none"
@@ -470,7 +769,8 @@ useEffect(() => {
                   </div>
 
                   <p className="text-xs text-gray-400">
-                    An invitation email will be sent with a secure link to set up their account.
+                    An invitation email will be sent with a secure link to set
+                    up their account.
                   </p>
 
                   <div className="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 pt-2">
@@ -480,11 +780,16 @@ useEffect(() => {
                     >
                       Cancel
                     </button>
-                    <button 
-                     onClick={handleSave}
+
+                    <button
+                      onClick={handleSave}
                       disabled={saving}
-                     className="w-[120px] flex items-center justify-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white py-2.5 rounded-lg text-sm font-medium transition-colors mb-3 disabled:opacity-70">
-                      {saving && <Loader2 size={14} className="animate-spin" />}
+                      className=" flex items-center justify-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white py-2.5 rounded-lg text-sm font-medium transition-colors mb-3 disabled:opacity-70"
+                    >
+                      {saving && (
+                        <Loader2 size={14} className="animate-spin" />
+                      )}
+
                       {saving ? "Sending..." : "Send Invite"}
                     </button>
                   </div>
@@ -496,23 +801,38 @@ useEffect(() => {
                   <h3 className="text-base font-semibold text-emerald-800 mb-4">
                     Before you invite
                   </h3>
+
                   <div className="space-y-4">
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 mb-1">Assign the right role</p>
+                      <p className="text-sm font-semibold text-gray-900 mb-1">
+                        Assign the right role
+                      </p>
+
                       <p className="text-sm text-gray-500">
-                        Roles determine what the staff member can view and manage in Hefa.
+                        Roles determine what the staff member can view and
+                        manage in Hefa.
                       </p>
                     </div>
+
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 mb-1">Choose a branch</p>
+                      <p className="text-sm font-semibold text-gray-900 mb-1">
+                        Choose a branch
+                      </p>
+
                       <p className="text-sm text-gray-500">
-                        The staff member will be associated with the selected branch.
+                        The staff member will be associated with the selected
+                        branch.
                       </p>
                     </div>
+
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 mb-1">Invitation status</p>
+                      <p className="text-sm font-semibold text-gray-900 mb-1">
+                        Invitation status
+                      </p>
+
                       <p className="text-sm text-gray-500">
-                        You can resend or cancel pending invites from the Staff list.
+                        You can resend or cancel pending invites from the Staff
+                        list.
                       </p>
                     </div>
                   </div>
@@ -522,17 +842,24 @@ useEffect(() => {
                   <h3 className="text-base font-semibold text-emerald-800 mb-4">
                     Invitation flow
                   </h3>
+
                   <ol className="space-y-4">
-                    {["Send invitation", "Staff opens secure link", "They set up their account", "They appear as Active staff"].map(
-                      (step, i) => (
-                        <li key={step} className="flex items-center gap-3">
-                          <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center shrink-0">
-                            {i + 1}
-                          </span>
-                          <span className="text-sm text-gray-700">{step}</span>
-                        </li>
-                      )
-                    )}
+                    {[
+                      "Send invitation",
+                      "Staff opens secure link",
+                      "They set up their account",
+                      "They appear as Active staff",
+                    ].map((step, i) => (
+                      <li key={step} className="flex items-center gap-3">
+                        <span className="w-6 h-6 rounded-full bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center shrink-0">
+                          {i + 1}
+                        </span>
+
+                        <span className="text-sm text-gray-700">
+                          {step}
+                        </span>
+                      </li>
+                    ))}
                   </ol>
                 </div>
               </div>
@@ -543,85 +870,159 @@ useEffect(() => {
         {/* ---------------- BRANCHES TAB ---------------- */}
         {activeTab === "Branches" && (
           <>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-3">Branches</h2>
-            <p className="text-gray-500 mb-4 text-sm sm:text-base px-3">Manage your business locations and branch activity.</p>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-8">
+              Branches
+            </h2>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 px-3">
+            <p className="text-gray-500 mb-4 text-sm sm:text-base px-8">
+              Manage your business locations and branch activity.
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 px-8">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-                <p className="text-sm text-gray-500 mb-2">Total branches</p>
+                <p className="text-sm text-gray-500 mb-2">
+                  Total branches
+                </p>
+
                 <div className="flex items-baseline gap-2 flex-wrap">
-                  <p className="text-xl sm:text-2xl font-semibold text-gray-900">{totalBranches}</p>
+                  <p className="text-xl sm:text-2xl font-semibold text-gray-900">
+                    {totalBranches}
+                  </p>
+
                   <span className="text-xs text-emerald-600">Active</span>
                 </div>
               </div>
+
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-                <p className="text-sm text-gray-500 mb-2">Active branches</p>
+                <p className="text-sm text-gray-500 mb-2">
+                  Active branches
+                </p>
+
                 <div className="flex items-baseline gap-2 flex-wrap">
-                  <p className="text-xl sm:text-2xl font-semibold text-gray-900">{activeBranches}</p>
-                  <span className="text-xs text-emerald-600">All reporting</span>
+                  <p className="text-xl sm:text-2xl font-semibold text-gray-900">
+                    {activeBranches}
+                  </p>
+
+                  <span className="text-xs text-emerald-600">
+                    All reporting
+                  </span>
                 </div>
               </div>
+
               <div className="col-span-2 sm:col-span-1 bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
-                <p className="text-sm text-gray-500 mb-2">Staff across branches</p>
+                <p className="text-sm text-gray-500 mb-2">
+                  Staff across branches
+                </p>
+
                 <div className="flex items-baseline gap-2 flex-wrap">
-                  <p className="text-xl sm:text-2xl font-semibold text-gray-900">{staffAcrossBranches}</p>
+                  <p className="text-xl sm:text-2xl font-semibold text-gray-900">
+                    {staffAcrossBranches}
+                  </p>
+
                   <span className="text-xs text-gray-400">Assigned</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-3">
+            {/* Branch search + filters */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-8">
               <div className="flex-1 relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+
                 <input
+                  value={branchQuery}
+                  onChange={(e) => setBranchQuery(e.target.value)}
                   placeholder="Search branches..."
                   className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
                 />
               </div>
-              <div className="-mx-4 flex gap-3 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-                <button className="flex shrink-0 items-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50">
-                  Status <ChevronDown size={14} />
-                </button>
-                <button className="flex shrink-0 items-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50">
-                  Sort: Recent <ChevronDown size={14} />
-                </button>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <FilterDropdown
+                  selected={branchStatus}
+                  options={["Status", "Active", "Inactive"]}
+                  onSelect={setBranchStatus}
+                />
+
+                <FilterDropdown
+                  selected={branchSort}
+                  options={["Sort: Recent", "Oldest", " A-Z", " Z-A"]}
+                  onSelect={setBranchSort}
+                />
               </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto px-3">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto mx-8">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Branch</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Location</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Staff</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Status</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Last Activity</th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Branch
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Location
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Staff
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Last Activity
+                    </th>
                     <th className="px-6 py-4 font-medium whitespace-nowrap"></th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {branches.map((b) => (
-                    <tr key={b.name} className="border-b border-gray-50 last:border-0">
+                  {filteredBranches.map((b) => (
+                    <tr
+                      key={b.name}
+                      className="border-b border-gray-50 last:border-0"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold flex items-center justify-center shrink-0">
-                            {b.name.split(" ").map((w) => w[0]).join("")}
+                            {b.name
+                              .split(" ")
+                              .map((w) => w[0])
+                              .join("")}
                           </div>
+
                           <div>
-                            <p className="font-medium text-gray-900">{b.name}</p>
+                            <p className="font-medium text-gray-900">
+                              {b.name}
+                            </p>
+
                             <p className="text-gray-400 text-xs">
-                              {b.name === "Main Branch" ? "Primary location" : "Branch location"}
+                              {b.name === "Main Branch"
+                                ? "Primary location"
+                                : "Branch location"}
                             </p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">{b.location}</td>
-                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">{b.staffCount} staff</td>
+
+                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
+                        {b.location}
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
+                        {b.staffCount} staff
+                      </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         <StatusBadge status={b.status} />
                       </td>
-                      <td className="px-6 py-4 text-gray-500 whitespace-nowrap">{b.lastActivity}</td>
+
+                      <td className="px-6 py-4 text-gray-500 whitespace-nowrap">
+                        {b.lastActivity}
+                      </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button className="text-gray-400 hover:text-gray-600">
                           <MoreHorizontal size={18} />
@@ -629,6 +1030,17 @@ useEffect(() => {
                       </td>
                     </tr>
                   ))}
+
+                  {filteredBranches.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="px-6 py-8 text-center text-gray-400"
+                      >
+                        No branches found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -638,61 +1050,122 @@ useEffect(() => {
         {/* ---------------- ROLES & PERMISSIONS TAB ---------------- */}
         {activeTab === "Roles & Permissions" && (
           <>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-3">Roles & permissions</h2>
-            <p className="text-gray-500 mb-4 text-sm sm:text-base px-3 ">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 px-8">
+              Roles & permissions
+            </h2>
+
+            <p className="text-gray-500 mb-4 text-sm sm:text-base px-8">
               Control what each role can view, create, edit, and manage.
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 px-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 px-8">
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">Roles</p>
-                <p className="text-xl sm:text-2xl font-semibold text-gray-900">{totalRoles}</p>
+
+                <p className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  {totalRoles}
+                </p>
               </div>
+
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">Staff assigned</p>
-                <p className="text-xl sm:text-2xl font-semibold text-gray-900">{staffAssigned}</p>
+
+                <p className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  {staffAssigned}
+                </p>
               </div>
+
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">Custom roles</p>
-                <p className="text-xl sm:text-2xl font-semibold text-gray-900">2</p>
+
+                <p className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  2
+                </p>
               </div>
+
               <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
                 <p className="text-sm text-gray-500 mb-2">Access levels</p>
-                <p className="text-xl sm:text-2xl font-semibold text-gray-900">4</p>
+
+                <p className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  4
+                </p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-3">
+            {/* Role search + filter */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-4 px-8">
               <div className="flex-1 relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+
                 <input
+                  value={roleQuery}
+                  onChange={(e) => setRoleQuery(e.target.value)}
                   placeholder="Search roles..."
                   className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
                 />
               </div>
-              <button className="flex items-center justify-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50 shrink-0">
-                All access levels <ChevronDown size={14} />
-              </button>
+
+              <FilterDropdown
+                selected={roleAccess}
+                options={[
+                  "All access levels",
+                  "Full access",
+                  "High",
+                  "Limited",
+                  "Finance",
+                  "Inventory",
+                ]}
+                onSelect={setRoleAccess}
+              />
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto mb-6 ">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto mb-6 mx-8">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 text-left text-xs text-gray-500 uppercase tracking-wide">
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Role</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Description</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Staff</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Access</th>
-                    <th className="px-6 py-4 font-medium whitespace-nowrap">Action</th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Role
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Description
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Staff
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Access
+                    </th>
+                    <th className="px-6 py-4 font-medium whitespace-nowrap">
+                      Action
+                    </th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {roles.map((r) => (
-                    <tr key={r.name} className="border-b border-gray-50 last:border-0">
-                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{r.name}</td>
-                      <td className="px-6 py-4 text-gray-600">{r.description}</td>
-                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">{r.staff}</td>
-                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">{r.access}</td>
+                  {filteredRoles.map((r) => (
+                    <tr
+                      key={r.name}
+                      className="border-b border-gray-50 last:border-0"
+                    >
+                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                        {r.name}
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-600">
+                        {r.description}
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
+                        {r.staff}
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-700 whitespace-nowrap">
+                        {r.access}
+                      </td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button className="text-gray-400 hover:text-gray-600">
                           <MoreHorizontal size={18} />
@@ -700,71 +1173,98 @@ useEffect(() => {
                       </td>
                     </tr>
                   ))}
+
+                  {filteredRoles.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-6 py-8 text-center text-gray-400"
+                      >
+                        No roles found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
 
-            <p className="text-sm text-gray-500 mb-4 px-3">Select a role to review or edit its permissions.</p>
+            <p className="text-sm text-gray-500 mb-4 px-8">
+              Select a role to review or edit its permissions.
+            </p>
 
-            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-5 px-3">
-              <p className="text-sm font-semibold text-emerald-800 mb-1">Permission tip</p>
+            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-5 mx-8">
+              <p className="text-sm font-semibold text-emerald-800 mb-1">
+                Permission tip
+              </p>
+
               <p className="text-sm text-emerald-700">
-                Give each team member only the access they need for their responsibilities.
+                Give each team member only the access they need for their
+                responsibilities.
               </p>
             </div>
           </>
         )}
       </main>
-     {showBranchToast && (
-  <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-lg">
-    <CheckCircle2 className="text-[#0F4C3A]" size={20} />
-    <div>
-      <p className="text-[13px] font-semibold text-[#182033]">
-        Branch added successfully
-      </p>
-      <p className="text-[12px] text-[#98A1AE]">
-        The branch record has been saved.
-      </p>
-    </div>
-    <button onClick={() => setShowBranchToast(false)}>
-      <X size={14} className="text-[#98A1AE]" />
-    </button>
-  </div>
-)}
 
-{showRoleToast && (
-  <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-lg">
-    <CheckCircle2 className="text-[#0F4C3A]" size={20} />
-    <div>
-      <p className="text-[13px] font-semibold text-[#182033]">
-        Role added successfully
-      </p>
-      <p className="text-[12px] text-[#98A1AE]">
-        The role is now available to assign.
-      </p>
-    </div>
-    <button onClick={() => setShowRoleToast(false)}>
-      <X size={14} className="text-[#98A1AE]" />
-    </button>
-  </div>
-)}
+      {showBranchToast && (
+        <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-lg">
+          <CheckCircle2 className="text-[#0F4C3A]" size={20} />
 
-{showStaffToast && (
-  <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-lg">
-    <CheckCircle2 className="text-[#0F4C3A]" size={20} />
-    <div>
-      <p className="text-[13px] font-semibold text-[#182033]">
-        Staff invited successfully
-      </p>
-      <p className="text-[12px] text-[#98A1AE]">
-        An invitation email has been sent.
-      </p>
-    </div>
-    <button onClick={() => setShowStaffToast(false)}>
-      <X size={14} className="text-[#98A1AE]" />
-    </button>
-  </div>
-)}
+          <div>
+            <p className="text-[13px] font-semibold text-[#182033]">
+              Branch added successfully
+            </p>
+
+            <p className="text-[12px] text-[#98A1AE]">
+              The branch record has been saved.
+            </p>
+          </div>
+
+          <button onClick={() => setShowBranchToast(false)}>
+            <X size={14} className="text-[#98A1AE]" />
+          </button>
+        </div>
+      )}
+
+      {showRoleToast && (
+        <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-lg">
+          <CheckCircle2 className="text-[#0F4C3A]" size={20} />
+
+          <div>
+            <p className="text-[13px] font-semibold text-[#182033]">
+              Role added successfully
+            </p>
+
+            <p className="text-[12px] text-[#98A1AE]">
+              The role is now available to assign.
+            </p>
+          </div>
+
+          <button onClick={() => setShowRoleToast(false)}>
+            <X size={14} className="text-[#98A1AE]" />
+          </button>
+        </div>
+      )}
+
+      {showStaffToast && (
+        <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white px-5 py-4 shadow-lg">
+          <CheckCircle2 className="text-[#0F4C3A]" size={20} />
+
+          <div>
+            <p className="text-[13px] font-semibold text-[#182033]">
+              Staff invited successfully
+            </p>
+
+            <p className="text-[12px] text-[#98A1AE]">
+              An invitation email has been sent.
+            </p>
+          </div>
+
+          <button onClick={() => setShowStaffToast(false)}>
+            <X size={14} className="text-[#98A1AE]" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -774,5 +1274,5 @@ export default function StaffBranchPage() {
     <Suspense fallback={null}>
       <StaffBranchesContent />
     </Suspense>
-  )
+  );
 }

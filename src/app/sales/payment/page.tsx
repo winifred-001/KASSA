@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Menu } from "lucide-react";
+import { Check, Menu,Bell } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 
 const steps = ["Sale", "Payment", "Receipt"] as const;
@@ -18,6 +18,35 @@ export default function ProcessingPaymentPage() {
   const [seconds, setSeconds] = useState(5);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
+
+  // Branch selected from the dashboard
+         const [selectedBranch, setSelectedBranch] = useState("Main branch");
+       
+         // Get the selected branch from the dashboard
+         useEffect(() => {
+           const savedBranch = localStorage.getItem("selectedBranch");
+       
+           if (savedBranch) {
+             setSelectedBranch(savedBranch);
+           }
+         }, []);
+       
+         // Listen for branch changes
+         useEffect(() => {
+           const handleBranchChange = () => {
+             const savedBranch = localStorage.getItem("selectedBranch");
+       
+             if (savedBranch) {
+               setSelectedBranch(savedBranch);
+             }
+           };
+       
+           window.addEventListener("storage", handleBranchChange);
+       
+           return () => {
+             window.removeEventListener("storage", handleBranchChange);
+           };
+         }, []);
 
   // Countdown + redirect
   useEffect(() => {
@@ -49,34 +78,49 @@ export default function ProcessingPaymentPage() {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <main className="lg:ml-[198px] p-4 sm:p-6 lg:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center bg- sm:justify-between gap-2 mb-1">
-          <div className="flex items-center gap-2">
+      <main className="lg:ml-[198px] ">
+       <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="shrink-0 rounded-md p-1.5 text-gray-600 transition hover:bg-gray-100 lg:hidden"
+              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
               aria-label="Open menu"
             >
               <Menu size={22} />
             </button>
 
-            <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
-              Processing Payment
+            <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
+                Add Product
             </h1>
           </div>
 
-          <button className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700">
-            Main branch
-          </button>
-        </div>
+          <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+              {/* Branch display - no dropdown */}
+            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+              <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                <span className="truncate">{selectedBranch}</span>
+              </div>
+            </div>
 
-        <p className="text-sm sm:text-base text-gray-500 mb-8">
+            <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
+              <Bell size={17} className="text-[#98A1AE]" />
+
+              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+            </button>
+
+            <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+              AO
+            </div>
+          </div>
+        </header>
+
+        <p className="text-sm sm:text-base text-gray-500 mb-8 px-8 mt-4">
           We&apos;re verifying your payment. Please don&apos;t close this screen.
         </p>
 
         {/* Stepper */}
-        <div className="flex items-center justify-center gap-3 mb-10 max-w-md mx-auto">
+        <div className="flex items-center justify-center gap-3 mb-10 max-w-md mx-auto px-8 ">
           {steps.map((step, i) => {
             const isDone = i === 0;
             const isActive = i === 1;
@@ -121,7 +165,7 @@ export default function ProcessingPaymentPage() {
           })}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-4xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-4xl px-8">
           {/* Processing card */}
           <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6 sm:p-10 flex flex-col items-center text-center">
             <div className="w-16 h-16 rounded-full border-4 border-gray-100 border-t-amber-500 animate-spin mb-6" />

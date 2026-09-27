@@ -1,7 +1,7 @@
 "use client";
 
-import { useState,useEffect } from "react";
-import { Download, Menu,Bell } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Download, Menu, Bell } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 
 const rangeTabs = ["Daily", "Weekly", "Monthly", "Custom range"] as const;
@@ -39,6 +39,7 @@ function SummaryCard({
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
       <p className="text-sm text-gray-500 mb-2">{label}</p>
+
       <p className="text-xl sm:text-2xl font-semibold text-gray-900">
         {value}
       </p>
@@ -153,7 +154,7 @@ function StackedTrendChart({
                 })}
               </div>
 
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 whitespace-nowrap">
                 {d.label}
               </span>
             </div>
@@ -247,60 +248,6 @@ function StaffTable({
         </table>
       </div>
     </div>
-  );
-}
-
-function LineChart({ values }: { values: number[] }) {
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-  const w = 600;
-  const h = 220;
-  const range = max - min || 1;
-
-  const points = values.map((v, i) => {
-    const x = (i / (values.length - 1)) * w;
-    const y =
-      h - ((v - min) / range) * (h - 20) - 10;
-
-    return `${x},${y}`;
-  });
-
-  const areaPoints = `0,${h} ${points.join(" ")} ${w},${h}`;
-
-  return (
-    <svg
-      viewBox={`0 0 ${w} ${h}`}
-      className="w-full h-56"
-    >
-      <polygon
-        points={areaPoints}
-        fill="#08745F"
-        fillOpacity="0.08"
-      />
-
-      <polyline
-        points={points.join(" ")}
-        fill="none"
-        stroke="#08745F"
-        strokeWidth={2.5}
-      />
-
-      {values.map((v, i) => {
-        const [x, y] = points[i]
-          .split(",")
-          .map(Number);
-
-        return (
-          <circle
-            key={i}
-            cx={x}
-            cy={y}
-            r={4}
-            fill="#08745F"
-          />
-        );
-      })}
-    </svg>
   );
 }
 
@@ -408,18 +355,20 @@ const monthlyStaff = [
 ];
 
 // ----- Custom range: Last 30 days data -----
+//
+// Converted to the same bar-chart structure used by the other charts.
 
 const customTrend = [
-  18,
-  22,
-  15,
-  28,
-  24,
-  32,
-  27,
-  36,
-  30,
-  40,
+  { label: "Jul 1", segments: [18] },
+  { label: "Jul 4", segments: [22] },
+  { label: "Jul 8", segments: [15] },
+  { label: "Jul 12", segments: [28] },
+  { label: "Jul 16", segments: [24] },
+  { label: "Jul 20", segments: [32] },
+  { label: "Jul 25", segments: [27] },
+  { label: "Jul 29", segments: [36] },
+  { label: "Aug 8", segments: [30] },
+  { label: "Aug 19", segments: [40] },
 ];
 
 const customChannels = [
@@ -567,40 +516,44 @@ const ytdStaff = [
 
 export default function ReportsPage() {
   const [range, setRange] = useState<RangeTab>("Daily");
+
   const [fromDate, setFromDate] = useState("2026-07-01");
   const [toDate, setToDate] = useState("2026-08-19");
-  const [quickFilter, setQuickFilter] = useState<"Last 30 days" | "This quarter" | "Year to date">(
-    "Last 30 days"
-  );
+
+  const [quickFilter, setQuickFilter] = useState<
+    "Last 30 days" | "This quarter" | "Year to date"
+  >("Last 30 days");
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // Branch selected from the dashboard
-      const [selectedBranch, setSelectedBranch] = useState("Main branch");
-    
-      // Get the selected branch from the dashboard
-      useEffect(() => {
-        const savedBranch = localStorage.getItem("selectedBranch");
-    
-        if (savedBranch) {
-          setSelectedBranch(savedBranch);
-        }
-      }, []);
-    
-      // Listen for branch changes
-      useEffect(() => {
-        const handleBranchChange = () => {
-          const savedBranch = localStorage.getItem("selectedBranch");
-    
-          if (savedBranch) {
-            setSelectedBranch(savedBranch);
-          }
-        };
-    
-        window.addEventListener("storage", handleBranchChange);
-    
-        return () => {
-          window.removeEventListener("storage", handleBranchChange);
-        };
-      }, []);
+  const [selectedBranch, setSelectedBranch] = useState("Main branch");
+
+  // Get the selected branch from the dashboard
+  useEffect(() => {
+    const savedBranch = localStorage.getItem("selectedBranch");
+
+    if (savedBranch) {
+      setSelectedBranch(savedBranch);
+    }
+  }, []);
+
+  // Listen for branch changes
+  useEffect(() => {
+    const handleBranchChange = () => {
+      const savedBranch = localStorage.getItem("selectedBranch");
+
+      if (savedBranch) {
+        setSelectedBranch(savedBranch);
+      }
+    };
+
+    window.addEventListener("storage", handleBranchChange);
+
+    return () => {
+      window.removeEventListener("storage", handleBranchChange);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
@@ -610,44 +563,45 @@ export default function ReportsPage() {
       />
 
       <main className="lg:ml-[198px]">
-         {/* Header */}
-                <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setSidebarOpen(true)}
-                      className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
-                      aria-label="Open menu"
-                    >
-                      <Menu size={22} />
-                    </button>
-        
-                    <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
-                      Reports &amp; Analytics
-                    </h1>
-                  </div>
-        
-                  <div className="flex shrink-0 items-center gap-3 sm:gap-5">
-                    {/* Branch display - no dropdown */}
-                    <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
-                      <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
-                        <span className="truncate">{selectedBranch}</span>
-                      </div>
-                    </div>
-                    <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
-                      <Bell size={17} className="text-[#98A1AE]" />
-        
-                      <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
-                    </button>
-        
-                    <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
-                      AO
-                    </div>
-                  </div>
-                </header>
-      
+        {/* Header */}
+        <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
+
+            <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
+              Reports &amp; Analytics
+            </h1>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+            {/* Branch display - no dropdown */}
+            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+              <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                <span className="truncate">{selectedBranch}</span>
+              </div>
+            </div>
+
+            <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
+              <Bell size={17} className="text-[#98A1AE]" />
+
+              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+            </button>
+
+            <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+              AO
+            </div>
+          </div>
+        </header>
+
         {/* Range tabs + download */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6 px-3 mt-4 ">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6 px-8 mt-4">
           <div className="flex bg-white rounded-lg border border-gray-200 p-1 overflow-x-auto max-w-full">
             {rangeTabs.map((tab) => (
               <button
@@ -674,7 +628,7 @@ export default function ReportsPage() {
 
         {range === "Daily" && (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-8">
               <SummaryCard
                 label="Total sales (7 days)"
                 value="₦2,840,600"
@@ -701,7 +655,7 @@ export default function ReportsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-8">
               <StackedTrendChart
                 data={dailyTrend}
                 title="Sales trend — last 7 days, by channel"
@@ -721,7 +675,7 @@ export default function ReportsPage() {
 
         {range === "Weekly" && (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-8">
               <SummaryCard
                 label="Total sales (6 weeks)"
                 value="₦16,940,200"
@@ -748,7 +702,7 @@ export default function ReportsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-8">
               <StackedTrendChart
                 data={weeklyTrend}
                 title="Sales trend — last 6 weeks, by channel"
@@ -768,7 +722,7 @@ export default function ReportsPage() {
 
         {range === "Monthly" && (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-8">
               <SummaryCard
                 label="Total sales (6 months)"
                 value="₦68,420,900"
@@ -795,7 +749,7 @@ export default function ReportsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-8">
               <StackedTrendChart
                 data={monthlyTrend}
                 title="Sales trend — last 6 months, by channel"
@@ -816,11 +770,9 @@ export default function ReportsPage() {
         {range === "Custom range" && (
           <>
             {/* Responsive custom range controls */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 mb-6 px-3">
-              
+            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 mb-6 px-8">
               {/* Dates */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_auto_1fr] gap-4 items-end">
-                
                 <div className="w-full">
                   <label className="block text-xs text-gray-500 mb-1.5">
                     From
@@ -829,9 +781,7 @@ export default function ReportsPage() {
                   <input
                     type="date"
                     value={fromDate}
-                    onChange={(e) =>
-                      setFromDate(e.target.value)
-                    }
+                    onChange={(e) => setFromDate(e.target.value)}
                     className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
                   />
                 </div>
@@ -848,9 +798,7 @@ export default function ReportsPage() {
                   <input
                     type="date"
                     value={toDate}
-                    onChange={(e) =>
-                      setToDate(e.target.value)
-                    }
+                    onChange={(e) => setToDate(e.target.value)}
                     className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
                   />
                 </div>
@@ -858,12 +806,9 @@ export default function ReportsPage() {
 
               {/* Quick filters + Apply */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-4">
-                
                 <div className="flex flex-wrap gap-2">
                   <button
-                    onClick={() =>
-                      setQuickFilter("Last 30 days")
-                    }
+                    onClick={() => setQuickFilter("Last 30 days")}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium ${
                       quickFilter === "Last 30 days"
                         ? "bg-emerald-50 text-emerald-700"
@@ -874,9 +819,7 @@ export default function ReportsPage() {
                   </button>
 
                   <button
-                    onClick={() =>
-                      setQuickFilter("This quarter")
-                    }
+                    onClick={() => setQuickFilter("This quarter")}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium ${
                       quickFilter === "This quarter"
                         ? "bg-emerald-50 text-emerald-700"
@@ -887,9 +830,7 @@ export default function ReportsPage() {
                   </button>
 
                   <button
-                    onClick={() =>
-                      setQuickFilter("Year to date")
-                    }
+                    onClick={() => setQuickFilter("Year to date")}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium ${
                       quickFilter === "Year to date"
                         ? "bg-emerald-50 text-emerald-700"
@@ -910,7 +851,7 @@ export default function ReportsPage() {
 
             {quickFilter === "Year to date" && (
               <>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-8">
                   <SummaryCard
                     label="Total sales (YTD 2026)"
                     value="₦91,240,600"
@@ -937,18 +878,16 @@ export default function ReportsPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-3">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-8">
                   <StackedTrendChart
                     data={ytdTrend}
                     title="Sales trend — year to date, by channel"
                   />
 
-                  <ChannelBreakdown
-                    data={ytdChannels}
-                  />
+                  <ChannelBreakdown data={ytdChannels} />
                 </div>
 
-                <StaffTable 
+                <StaffTable
                   title="Sales by staff member — Year to date 2026"
                   rows={ytdStaff}
                 />
@@ -959,7 +898,7 @@ export default function ReportsPage() {
 
             {quickFilter === "This quarter" && (
               <>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-8">
                   <SummaryCard
                     label="Total sales (Q3 2026)"
                     value="₦35,760,800"
@@ -986,15 +925,13 @@ export default function ReportsPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-3">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-8">
                   <StackedTrendChart
                     data={quarterTrend}
                     title="Sales trend — this quarter, by channel"
                   />
 
-                  <ChannelBreakdown
-                    data={quarterChannels}
-                  />
+                  <ChannelBreakdown data={quarterChannels} />
                 </div>
 
                 <StaffTable
@@ -1008,7 +945,7 @@ export default function ReportsPage() {
 
             {quickFilter === "Last 30 days" && (
               <>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-8">
                   <SummaryCard
                     label="Total sales (1 Jul – 19 Aug)"
                     value="₦24,180,500"
@@ -1035,26 +972,13 @@ export default function ReportsPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-3">
-                  
-                  <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5 sm:p-6">
-                    <h2 className="text-base font-semibold text-gray-900 mb-6">
-                      Sales trend — 1 Jul to 19 Aug 2026
-                    </h2>
-
-                    <LineChart values={customTrend} />
-
-                    <div className="flex justify-between mt-2 text-xs text-gray-400">
-                      <span>Jul 1</span>
-                      <span>Jul 20</span>
-                      <span>Aug 8</span>
-                      <span>Aug 19</span>
-                    </div>
-                  </div>
-
-                  <ChannelBreakdown
-                    data={customChannels}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 px-8">
+                  <StackedTrendChart
+                    data={customTrend}
+                    title="Sales trend — 1 Jul to 19 Aug 2026"
                   />
+
+                  <ChannelBreakdown data={customChannels} />
                 </div>
 
                 <StaffTable

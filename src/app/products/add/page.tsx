@@ -129,7 +129,7 @@ export default function AddProductPage() {
           </div>
         </header>
 
-        <p className="text-sm md:text-base text-gray-500 mb-6 px-3">
+        <p className="text-sm md:text-base text-gray-500 mb-6 px-3 mt-4">
           Add a new product to your catalogue.
         </p>
 

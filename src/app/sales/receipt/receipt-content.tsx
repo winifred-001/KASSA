@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Wifi, MessageSquare, Mail, Download, Printer } from "lucide-react";
+import { Wifi, MessageSquare, Mail, Download, Printer, Bell,Menu } from "lucide-react";
 import KassaSidebar from "@/components/KassaSidebar";
 
 const receiptItems = [
@@ -18,6 +18,35 @@ export default function ReceiptContent() {
   const params = useSearchParams();
   const total = Number(params.get("total") ?? 24500);
   const method = params.get("method") ?? "Transfer";
+
+  // Branch selected from the dashboard
+           const [selectedBranch, setSelectedBranch] = useState("Main branch");
+         
+           // Get the selected branch from the dashboard
+           useEffect(() => {
+             const savedBranch = localStorage.getItem("selectedBranch");
+         
+             if (savedBranch) {
+               setSelectedBranch(savedBranch);
+             }
+           }, []);
+         
+           // Listen for branch changes
+           useEffect(() => {
+             const handleBranchChange = () => {
+               const savedBranch = localStorage.getItem("selectedBranch");
+         
+               if (savedBranch) {
+                 setSelectedBranch(savedBranch);
+               }
+             };
+         
+             window.addEventListener("storage", handleBranchChange);
+         
+             return () => {
+               window.removeEventListener("storage", handleBranchChange);
+             };
+           }, []);
 
   const methodLabel: Record<string, string> = {
     Transfer: "Bank transfer",
@@ -37,23 +66,51 @@ export default function ReceiptContent() {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <main className="ml-[198px] p-8">
-        <div className="flex items-center justify-between mb-1">
-          <h1 className="text-2xl font-semibold text-gray-900">Receipt</h1>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700">
-            Main branch
-          </button>
-        </div>
+      <main className="lg:ml-[198px] ">
+       <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
 
+            <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
+                Receipt
+            </h1>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+              {/* Branch display - no dropdown */}
+            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+              <div className="flex h-[34px] w-full items-center justify-between rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                <span className="truncate">{selectedBranch}</span>
+              </div>
+            </div>
+
+            <button className="relative flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#F8F9FA]">
+              <Bell size={17} className="text-[#98A1AE]" />
+
+              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+            </button>
+
+            <div className="flex h-[36px] w-[36px] items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+              AO
+            </div>
+          </div>
+        </header>
         <button
           onClick={() => router.push(`/sales/success?total=${total}&method=${method}`)}
-          className="text-sm text-emerald-700 font-medium mb-4 mt-2"
+          className="text-sm text-emerald-700 font-medium mb-4 mt-4 px-8"
         >
           ← Back to payment summary
         </button>
 
         {/* Stepper */}
-        <div className="flex items-center justify-center gap-3 mb-8 max-w-md mx-auto">
+        <div className="flex items-center justify-center gap-3 mb-8 max-w-md mx-auto px-8">
           {["Sale", "Payment", "Receipt"].map((step, i) => (
             <div key={step} className="flex items-center flex-1">
               <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold bg-emerald-700 text-white">
@@ -64,7 +121,7 @@ export default function ReceiptContent() {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-6 max-w-4xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-4xl px-8">
           {/* Receipt */}
           <div className="col-span-2 bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex flex-col items-center text-center mb-6">
@@ -131,7 +188,7 @@ export default function ReceiptContent() {
           </div>
 
           {/* Share receipt */}
-          <div className="space-y-4">
+          <div className="space-y-4 ">
             <div className="bg-white rounded-xl border border-gray-200 p-6">
               <h3 className="text-base font-semibold text-gray-900 mb-4">Share receipt</h3>
 

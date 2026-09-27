@@ -120,13 +120,13 @@ export default function ScanProductPage() {
 
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-emerald-700 font-medium mt-4 mb-4 px-3"
+          className="inline-flex items-center gap-1.5 text-sm text-emerald-700 font-medium mt-4 mb-4 px-8"
         >
           <ArrowLeft size={14} />
           Back to home
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-3 ">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 px-8 ">
           {/* Scanner viewport */}
           <div className="lg:col-span-2 bg-[#0B1220] rounded-xl p-5 sm:p-8 flex flex-col items-center justify-between min-h-[380px] sm:min-h-[520px]">
             <div className="relative w-full max-w-md flex-1 flex items-center justify-center">
