@@ -26,17 +26,6 @@ export default function LoginPage() {
     <div className="min-h-screen grid lg:h-screen lg:overflow-hidden lg:grid-cols-[5fr_6fr]">
       {/* Left panel */}
       <div className="relative flex flex-col overflow-hidden text-white px-10 pt-8 pb-8 lg:px-14 lg:pt-8 lg:pb-8">
-        {/* Background image */}
-        <Image
-          src="/images/Kassa's Login.png"
-          alt=""
-          fill
-          priority
-          sizes="(min-width: 1024px) 70vw, 100vw"
-          className="object-cover"
-        />
-        {/* Green overlay */}
-        <div className="absolute inset-0 bg-[#08745F]/85" />
 
         {/* Content */}
         <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-sm flex-1 flex-col justify-between">
