@@ -27,6 +27,9 @@ function CustomersPageContent() {
   const router = useRouter();
   const [showToast, setShowToast] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedCustomers, setSelectedCustomers] = useState("All Customers");
+  const [selectedbranches, setSelectedbranches] = useState("All Branches");
+  const [selectedNewestfirst, setSelectedNewestfirst] = useState("Newest first");
  
   useEffect(() => {
     if (searchParams.get("added") === "true") {
@@ -34,7 +37,7 @@ function CustomersPageContent() {
       router.replace("/customers");
     }
   }, [searchParams, router]);
- 
+  6
   useEffect(() => {
     if (!showToast) return;
     const timer = setTimeout(() => setShowToast(false), 4000);
@@ -44,34 +47,76 @@ function CustomersPageContent() {
   const filtered = customers.filter((c) =>
     `${c.name} ${c.phone} ${c.email}`.toLowerCase().includes(query.toLowerCase())
   );
-  // Branch selected from the dashboard
-        const [selectedBranch, setSelectedBranch] = useState("Main branch");
-      
-        // Get the selected branch from the dashboard
-        useEffect(() => {
-          const savedBranch = localStorage.getItem("selectedBranch");
-      
-          if (savedBranch) {
-            setSelectedBranch(savedBranch);
-          }
-        }, []);
-      
-        // Listen for branch changes
-        useEffect(() => {
-          const handleBranchChange = () => {
-            const savedBranch = localStorage.getItem("selectedBranch");
-      
-            if (savedBranch) {
-              setSelectedBranch(savedBranch);
-            }
-          };
-      
-          window.addEventListener("storage", handleBranchChange);
-      
-          return () => {
-            window.removeEventListener("storage", handleBranchChange);
-          };
-        }, []);
+  const [selectedBranch, setSelectedBranch] = useState("Main branch");
+
+// Get the selected branch from localStorage
+useEffect(() => {
+  const savedBranch = localStorage.getItem("selectedBranch");
+
+  if (savedBranch) { 
+    setSelectedBranch(savedBranch);
+  }
+}, []);
+
+// Listen for branch changes
+useEffect(() => {
+  const handleBranchChange = () => {
+    const savedBranch = localStorage.getItem("selectedBranch");
+
+    if (savedBranch) {
+      setSelectedBranch(savedBranch);
+    }
+  };
+
+  window.addEventListener("branchChanged", handleBranchChange);
+
+  return () => {
+    window.removeEventListener("branchChanged", handleBranchChange);
+  };
+}, []);
+
+  function FilterDropdown({
+    selected,
+    options,
+    onSelect,
+  }: {
+    selected: string;
+    options: string[];
+    onSelect: (value: string) => void;
+  }) {
+    const [open, setOpen] = useState(false);
+   
+    return (
+      <div className="relative shrink-0">
+        <button
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          className="flex items-center gap-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50"
+        >
+          {selected}
+          <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+        </button>
+   
+        {open && (
+          <div className="absolute left-0 top-full z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
+            {options.map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => {
+                  onSelect(option);
+                  setOpen(false);
+                }}
+                className="w-full rounded-md px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-gray-50">
@@ -175,16 +220,25 @@ function CustomersPageContent() {
               className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700"
             />
           </div>
-          <div className="-mx-4 flex items-center gap-3 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-            <button className="flex shrink-0 items-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50">
-              All customers <ChevronDown size={14} />
-            </button>
-            <button className="flex shrink-0 items-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50">
-              All branches <ChevronDown size={14} />
-            </button>
-            <button className="flex shrink-0 items-center gap-1 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50">
-              Newest first <ChevronDown size={14} />
-            </button>
+             
+          <div className="-mx-4 flex items-center gap-3 overflow-visible px-4 sm:mx-0 sm:px-0">
+            <FilterDropdown
+                selected={selectedCustomers}
+                options={["All Customers", "VIP", "Regular", "New"]}
+                onSelect={setSelectedCustomers}
+              />
+
+              <FilterDropdown
+                selected={selectedbranches}
+                options={["All Branches", "Main branch", "Branch 1", "Branch 2"]}
+                onSelect={setSelectedbranches}
+              />
+
+              <FilterDropdown
+                selected={selectedNewestfirst}
+                options={["Last 7 days", "Last 30 days", "This month", "This year"]}
+                onSelect={setSelectedNewestfirst}
+              />
             <button className="flex shrink-0 items-center gap-2 px-4 py-2.5 text-sm text-emerald-700 font-medium hover:text-emerald-800">
               <Download size={16} />
               Export

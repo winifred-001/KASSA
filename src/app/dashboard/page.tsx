@@ -73,8 +73,15 @@ function StatusBadge({ status }: { status: string }) {
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [branchOpen, setBranchOpen] = useState(false);
-  const [selectedBranch, setSelectedBranch] = useState(branches[0]);
   const branchRef = useRef<HTMLDivElement>(null);
+  const [selectedBranch, setSelectedBranch] = useState("Main branch");
+  useEffect(() => {
+  const savedBranch = localStorage.getItem("selectedBranch");
+
+  if (savedBranch) {
+    setSelectedBranch(savedBranch);
+  }
+ }, []);
 
   // Close the dropdown when clicking outside it or pressing Escape
   useEffect(() => {
@@ -128,7 +135,7 @@ export default function DashboardPage() {
           <div className="flex shrink-0 items-center gap-2 sm:gap-4 lg:gap-5">
             {/* Branch selector */}
             <div
-              ref={branchRef}
+             ref={branchRef}
               className="relative hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]"
             >
               <button
@@ -159,8 +166,10 @@ export default function DashboardPage() {
                       <li key={branch} role="option" aria-selected={active}>
                         <button
                           type="button"
-                          onClick={() => {
-                            setSelectedBranch(branch);
+                         onClick={() => {
+                           setSelectedBranch(branch);
+                           localStorage.setItem("selectedBranch", branch);
+                            window.dispatchEvent(new Event("branchChanged"));
                             setBranchOpen(false);
                           }}
                           className={`flex w-full items-center justify-between px-3 py-2 text-left text-[13px] transition hover:bg-[#F3F6F5] ${

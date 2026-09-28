@@ -163,8 +163,8 @@ export default function TransactionsPage() {
   const [selectedStatuses, setSelectedStatuses] = useState("All statuses");
   const [selected7Days, setSelected7Days] = useState("Last 7 days");
 
-   // Branch selected from the dashboard
-    const [selectedBranch, setSelectedBranch] = useState("Main branch");
+  // Branch selected from the dashboard
+const [selectedBranch, setSelectedBranch] = useState("Main branch");
   
     // Get the selected branch from the dashboard
     useEffect(() => {
@@ -177,21 +177,20 @@ export default function TransactionsPage() {
   
     // Listen for branch changes
     useEffect(() => {
-      const handleBranchChange = () => {
-        const savedBranch = localStorage.getItem("selectedBranch");
-  
-        if (savedBranch) {
-          setSelectedBranch(savedBranch);
-        }
-      };
-  
-      window.addEventListener("storage", handleBranchChange);
-  
-      return () => {
-        window.removeEventListener("storage", handleBranchChange);
-      };
-    }, []);
- 
+  const handleBranchChange = () => {
+    const savedBranch = localStorage.getItem("selectedBranch");
+
+    if (savedBranch) {
+      setSelectedBranch(savedBranch);
+    }
+  };
+
+  window.addEventListener("branchChanged", handleBranchChange);
+
+  return () => {
+    window.removeEventListener("branchChanged", handleBranchChange);
+  };
+}, []);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#F5F6F8]">

@@ -1,23 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import KassaSidebar from "@/components/KassaSidebar";
-import { Check } from "lucide-react";
+import { Check, Menu, Bell } from "lucide-react";
 
-type SaleItem = { name: string; price: number; qty: number };
+type SaleItem = {
+  name: string;
+  price: number;
+  qty: number;
+};
 
 export default function ConfirmPaymentContent() {
   const router = useRouter();
   const params = useSearchParams();
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState("Main branch");
+  const [items, setItems] = useState<SaleItem[]>([]);
+
   const total = Number(params.get("total") ?? 0);
   const subtotal = Number(params.get("subtotal") ?? 0);
   const discount = Number(params.get("discount") ?? 0);
   const method = params.get("method") ?? "Transfer";
-  const items: SaleItem[] = params.get("items")
-    ? JSON.parse(decodeURIComponent(params.get("items")!))
-    : [];
+
+  // Get sale items from the URL
+  useEffect(() => {
+    const itemsParam = params.get("items");
+
+    if (!itemsParam) {
+      setItems([]);
+      return;
+    }
+
+    try {
+      const decodedItems = decodeURIComponent(itemsParam);
+      const parsedItems = JSON.parse(decodedItems);
+
+      if (Array.isArray(parsedItems)) {
+        setItems(parsedItems);
+      } else {
+        setItems([]);
+      }
+    } catch (error) {
+      console.error("Unable to read sale items:", error);
+      setItems([]);
+    }
+  }, [params]);
 
   const methodLabel: Record<string, string> = {
     Transfer: "Bank Transfer",
@@ -26,151 +55,311 @@ export default function ConfirmPaymentContent() {
     "USSD / Card": "USSD / Card",
   };
 
+  // Get the selected branch
+  useEffect(() => {
+    const savedBranch = localStorage.getItem("selectedBranch");
+
+    if (savedBranch) {
+      setSelectedBranch(savedBranch);
+    }
+  }, []);
+
+  // Listen for branch changes
+  useEffect(() => {
+    const handleBranchChange = () => {
+      const savedBranch = localStorage.getItem("selectedBranch");
+
+      if (savedBranch) {
+        setSelectedBranch(savedBranch);
+      }
+    };
+
+    window.addEventListener("branchChanged", handleBranchChange);
+
+    return () => {
+      window.removeEventListener("branchChanged", handleBranchChange);
+    };
+  }, []);
+
   const handleConfirm = () => {
-    const query = new URLSearchParams({ total: String(total), method }).toString();
+    const query = new URLSearchParams({
+      total: String(total),
+      method,
+    }).toString();
+
     router.push(`/sales/payment?${query}`);
   };
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen overflow-x-hidden bg-gray-50">
+      {/* Sidebar */}
       <KassaSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
 
-      <main className="ml-[198px] p-8">
-        <div className="flex items-center justify-between mb-1">
-          <h1 className="text-2xl font-semibold text-gray-900">New sale</h1>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700">
-            Main branch
-          </button>
-        </div>
-        <p className="text-gray-500 mb-8">Complete the payment for this sale.</p>
+      {/* Main content */}
+      <main className="min-h-screen lg:ml-[198px]">
+        {/* Header */}
+        <header className="flex min-h-[80px] items-center justify-between gap-4 border-b border-[#E5E7EB] bg-white px-4 py-4 sm:px-6 lg:px-8">
+          {/* Left side */}
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="shrink-0 rounded-md p-1.5 text-[#374151] transition hover:bg-[#F3F4F6] lg:hidden"
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
 
-        {/* Stepper */}
-        <div className="flex items-center justify-center gap-3 mb-10 max-w-md mx-auto">
-          {["Sale", "Payment", "Receipt"].map((step, i) => (
-            <div key={step} className="flex items-center flex-1">
-              <div className="flex flex-col items-center gap-2">
-                <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${
-                    i === 0
-                      ? "bg-emerald-700 text-white"
-                      : i === 1
-                      ? "bg-emerald-700 text-white"
-                      : "bg-gray-100 text-gray-400"
-                  }`}
-                >
-                  {i === 0 ? <Check size={14} /> : i + 1}
-                </div>
-                <span
-                  className={`text-xs font-medium ${
-                    i === 1 ? "text-emerald-700" : i === 0 ? "text-gray-700" : "text-gray-400"
-                  }`}
-                >
-                  {step}
-                </span>
+            <h1 className="truncate text-[18px] font-bold text-[#182033] sm:text-[20px] lg:text-[21px]">
+                New sale
+            </h1>
+          </div>
+
+          {/* Right side */}
+          <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+            {/* Branch */}
+            <div className="hidden w-[130px] sm:block sm:w-[150px] lg:w-[162px]">
+              <div className="flex h-[34px] w-full items-center rounded-[9px] border border-[#D8DCE3] bg-white px-3 text-[12px] text-[#374151] sm:text-[13px]">
+                <span className="truncate">{selectedBranch}</span>
               </div>
-              {i < 2 && (
-                <div className={`flex-1 h-0.5 mx-2 -mt-5 ${i === 0 ? "bg-emerald-700" : "bg-gray-200"}`} />
-              )}
             </div>
-          ))}
-        </div>
 
-        <div className="grid grid-cols-2 gap-6 max-w-3xl mx-auto">
-          {/* Order summary */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">Order summary</h2>
-            <p className="text-sm text-gray-500 mb-4">{items.length} items</p>
+            {/* Notification */}
+            <button
+              type="button"
+              aria-label="Notifications"
+              className="relative flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#F8F9FA]"
+            >
+              <Bell size={17} className="text-[#98A1AE]" />
 
-            <div className="space-y-3 mb-4">
-              {items.map((item) => (
-                <div key={item.name} className="flex items-center justify-between text-sm">
-                  <div>
-                    <p className="text-gray-900">{item.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {item.qty} × ₦{item.price.toLocaleString()}
-                    </p>
+              <span className="absolute right-[8px] top-[6px] h-[7px] w-[7px] rounded-full bg-[#E54848]" />
+            </button>
+
+            {/* Avatar */}
+            <div className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#E5F5F0] text-[12px] font-semibold text-[#08745F]">
+              AO
+            </div>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <div className="px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
+          <p className="mb-8 text-sm text-gray-500 sm:text-base">
+            Complete the payment for this sale.
+          </p>
+
+          {/* Stepper */}
+          <div className="mx-auto mb-10 flex w-full max-w-md items-start">
+            {["Sale", "Payment", "Receipt"].map((step, i) => (
+              <div
+                key={step}
+                className="flex min-w-0 flex-1 items-start"
+              >
+                {/* Step */}
+                <div className="flex min-w-0 flex-col items-center gap-2">
+                  <div
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                      i === 0 || i === 1
+                        ? "bg-emerald-700 text-white"
+                        : "bg-gray-100 text-gray-400"
+                    }`}
+                  >
+                    {i === 0 ? <Check size={14} /> : i + 1}
                   </div>
-                  <span className="font-medium text-gray-900">
-                    ₦{(item.price * item.qty).toLocaleString()}
+
+                  <span
+                    className={`truncate text-xs font-medium ${
+                      i === 1
+                        ? "text-emerald-700"
+                        : i === 0
+                        ? "text-gray-700"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {step}
                   </span>
                 </div>
-              ))}
-            </div>
 
-            <div className="border-t border-gray-100 pt-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Subtotal</span>
-                <span className="text-gray-900">₦{subtotal.toLocaleString()}</span>
+                {/* Connecting line */}
+                {i < 2 && (
+                  <div
+                    className={`mt-3 h-0.5 min-w-[20px] flex-1 ${
+                      i === 0
+                        ? "bg-emerald-700"
+                        : "bg-gray-200"
+                    }`}
+                  />
+                )}
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Discount</span>
-                <span className="text-gray-900">-₦{discount.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between font-semibold pt-1">
-                <span className="text-gray-900">Total</span>
-                <span className="text-gray-900 text-lg">₦{total.toLocaleString()}</span>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Confirm payment */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">Confirm payment</h2>
-            <p className="text-sm text-gray-500 mb-4">
-              Payment method selected during checkout
-            </p>
+          {/* Main cards */}
+          <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* =========================
+                ORDER SUMMARY
+            ========================== */}
+            <div className="rounded-xl border border-gray-200 bg-white p-5 sm:p-6">
+              <h2 className="mb-1 text-lg font-semibold text-gray-900">
+                Order summary
+              </h2>
 
-            <div className="border border-emerald-600 bg-emerald-50 rounded-lg p-4 flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full bg-emerald-700 text-white text-xs font-bold flex items-center justify-center">
-                  N
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">
-                    {methodLabel[method] ?? method}
+              <p className="mb-4 text-sm text-gray-500">
+                {items.length} {items.length === 1 ? "item" : "items"}
+              </p>
+
+              {/* Products */}
+              <div className="mb-4 space-y-3">
+                {items.length > 0 ? (
+                  items.map((item, index) => (
+                    <div
+                      key={`${item.name}-${index}`}
+                      className="flex items-start justify-between gap-4 text-sm"
+                    >
+                      <div className="min-w-0">
+                        <p className="break-words text-gray-900">
+                          {item.name}
+                        </p>
+
+                        <p className="text-xs text-gray-500">
+                          {item.qty} × ₦
+                          {item.price.toLocaleString()}
+                        </p>
+                      </div>
+
+                      <span className="shrink-0 font-medium text-gray-900">
+                        ₦
+                        {(item.price * item.qty).toLocaleString()}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="py-3 text-sm text-gray-400">
+                    No items found for this sale.
                   </p>
-                  <p className="text-xs text-gray-500">Selected payment method</p>
+                )}
+              </div>
+
+              {/* Totals */}
+              <div className="space-y-2 border-t border-gray-100 pt-4">
+                <div className="flex justify-between gap-4 text-sm">
+                  <span className="text-gray-500">
+                    Subtotal
+                  </span>
+
+                  <span className="text-gray-900">
+                    ₦{subtotal.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex justify-between gap-4 text-sm">
+                  <span className="text-gray-500">
+                    Discount
+                  </span>
+
+                  <span className="text-gray-900">
+                    -₦{discount.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex justify-between gap-4 pt-1 font-semibold">
+                  <span className="text-gray-900">
+                    Total
+                  </span>
+
+                  <span className="text-lg text-gray-900">
+                    ₦{total.toLocaleString()}
+                  </span>
                 </div>
               </div>
-              <span className="text-xs font-medium text-emerald-700 uppercase">Selected</span>
             </div>
 
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
-              Amount to collect
-            </p>
-            <div className="border border-gray-200 rounded-lg px-4 py-3 mb-5">
-              <p className="text-xl font-bold text-gray-900">₦{total.toLocaleString()}.00</p>
-            </div>
+            {/* =========================
+                CONFIRM PAYMENT
+            ========================== */}
+            <div className="rounded-xl border border-gray-200 bg-white p-5 sm:p-6">
+              <h2 className="mb-1 text-lg font-semibold text-gray-900">
+                Confirm payment
+              </h2>
 
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1.5">
-              Customer
-            </p>
-            <div className="border border-gray-200 rounded-lg px-4 py-3 mb-6">
-              <p className="text-sm font-semibold text-gray-900">Walk-in customer</p>
-            </div>
+              <p className="mb-4 text-sm text-gray-500">
+                Payment method selected during checkout
+              </p>
 
-            <button
-              onClick={handleConfirm}
-              className="w-full bg-emerald-800 hover:bg-emerald-900 text-white py-3 rounded-lg text-sm font-semibold transition-colors mb-2"
-            >
-              Confirm & Pay • ₦{total.toLocaleString()}
-            </button>
-            <p className="text-xs text-gray-400 text-center">
-              Confirm to verify the payment and issue the receipt.
-            </p>
+              {/* Selected payment method */}
+              <div className="mb-5 flex items-center justify-between gap-3 rounded-lg border border-emerald-600 bg-emerald-50 p-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-xs font-bold text-white">
+                    N
+                  </span>
+
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-gray-900">
+                      {methodLabel[method] ?? method}
+                    </p>
+
+                    <p className="text-xs text-gray-500">
+                      Selected payment method
+                    </p>
+                  </div>
+                </div>
+
+                <span className="shrink-0 text-xs font-medium uppercase text-emerald-700">
+                  Selected
+                </span>
+              </div>
+
+              {/* Amount */}
+              <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-gray-500">
+                Amount to collect
+              </p>
+
+              <div className="mb-5 rounded-lg border border-gray-200 px-4 py-3">
+                <p className="text-xl font-bold text-gray-900">
+                  ₦{total.toLocaleString()}.00
+                </p>
+              </div>
+
+              {/* Customer */}
+              <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-gray-500">
+                Customer
+              </p>
+
+              <div className="mb-6 rounded-lg border border-gray-200 px-4 py-3">
+                <p className="text-sm font-semibold text-gray-900">
+                  Walk-in customer
+                </p>
+              </div>
+
+              {/* Confirm button */}
+              <button
+                type="button"
+                onClick={handleConfirm}
+                className="mb-2 w-full rounded-lg bg-emerald-800 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-900"
+              >
+                Confirm & Pay • ₦
+                {total.toLocaleString()}
+              </button>
+
+              <p className="text-center text-xs text-gray-400">
+                Confirm to verify the payment and issue the receipt.
+              </p>
+            </div>
           </div>
-        </div>
 
-        <p className="text-center text-xs text-gray-400 mt-8">
-          Kassa • Secure Payment{" "}
-          <span className="ml-4">Payment confirmation will appear before the receipt is issued.</span>
-        </p>
+          {/* Footer */}
+          <p className="mt-8 text-center text-xs text-gray-400">
+            Kassa • Secure Payment
+            <span className="mt-1 block sm:ml-4 sm:mt-0 sm:inline">
+              Payment confirmation will appear before the receipt is issued.
+            </span>
+          </p>
+        </div>
       </main>
     </div>
   );
 }
+
