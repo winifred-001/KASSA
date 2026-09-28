@@ -7,9 +7,9 @@ type AuthSplitLayoutProps = {
 
 export default function AuthSplitLayout({ children }: AuthSplitLayoutProps) {
   return (
-    <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
+    <div className="min-h-screen grid lg:h-screen overflow-x-auto lg:grid-cols-[6fr_6fr]">
       {/* Marketing panel */}
-      <div className="hidden lg:flex lg:flex-col lg:justify-between bg-brand-500 px-12 py-20 text-white">
+      <div className=" lg:flex lg:flex-col lg:justify-between bg-brand-500 px-12 py-20 text-white">
         <div>
           <Logo variant="light" />
 

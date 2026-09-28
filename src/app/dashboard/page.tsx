@@ -69,7 +69,6 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [branchOpen, setBranchOpen] = useState(false);

@@ -37,6 +37,7 @@ export default function SignUpPage() {
   };
 
   return (
+    <div className="min-h-screen  lg:overflow-hidden lg:grid-cols-[5fr_6fr]">
     <AuthSplitLayout>
       <p className="text-xs font-semibold uppercase tracking-wide text-brand-500">
         Step 1 of 1
@@ -167,5 +168,6 @@ export default function SignUpPage() {
         </p>
       </form>
     </AuthSplitLayout>
+  </div>
   );
 }

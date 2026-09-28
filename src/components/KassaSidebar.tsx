@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
+import { X, LogOut } from "lucide-react";
 
 import Logo from "@/components/logo";
 
@@ -55,7 +55,7 @@ export default function KassaSidebar({
         </div>
 
         {/* Navigation */}
-        <nav className="mt-[48px] flex flex-col gap-[4px]">
+        <nav className="mt-[48px] flex flex-1 flex-col gap-[4px]">
           {menuItems.map((item) => {
             const active =
               pathname === item.href ||
@@ -81,6 +81,13 @@ export default function KassaSidebar({
             );
           })}
         </nav>
+
+        {/* Log out */} 
+        <button type="button" onClick={() => { console.log("Logging out..."); }} 
+        className="mx-4 mb-5 flex h-[44px] w-[calc(100%-2rem)] items-center gap-3 rounded-[8px] px-[14px] text-[14px] text-white/90 transition hover:bg-[#075C4D]" > 
+        <LogOut size={18} />
+        <span>Log out</span> 
+        </button>
       </aside>
     </>
   );

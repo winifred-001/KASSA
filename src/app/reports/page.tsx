@@ -194,7 +194,7 @@ function StaffTable({
   }[];
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-5 sm:p-6">
+    <div className="bg-white rounded-xl border border-gray-200 mx-8 p-5 sm:p-6">
       <h2 className="text-base font-semibold text-gray-900 mb-4">
         {title}
       </h2>
@@ -770,9 +770,9 @@ export default function ReportsPage() {
         {range === "Custom range" && (
           <>
             {/* Responsive custom range controls */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 mb-6 px-8">
+            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 mb-6 mx-8">
               {/* Dates */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_auto_1fr] gap-4 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_auto_1fr] gap-4 items-end ">
                 <div className="w-full">
                   <label className="block text-xs text-gray-500 mb-1.5">
                     From

@@ -221,7 +221,7 @@ useEffect(() => {
             />
           </div>
              
-          <div className="-mx-4 flex items-center gap-3 overflow-visible px-4 sm:mx-0 sm:px-0">
+          <div className="-mx-4 flex items-center gap-3 overflow-x-auto px-4 sm:mx-0 sm:px-0">
             <FilterDropdown
                 selected={selectedCustomers}
                 options={["All Customers", "VIP", "Regular", "New"]}
