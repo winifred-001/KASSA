@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-import AuthSplitLayout from "@/components/auth/AuthSplitLayout";
 import TextField from "@/components/ui/TextField";
 import SelectField from "@/components/ui/SelectField";
 import Button from "@/components/ui/Button";
@@ -35,7 +33,7 @@ export default function SignUpPage() {
     router.push("/onboarding");
   };
   return (
-    <AuthSplitLayout>
+   <div>
       <p className="text-xs font-semibold uppercase tracking-wide text-brand-500">
         Step 1 of 1
       </p>
@@ -164,6 +162,6 @@ export default function SignUpPage() {
           </Link>
         </p>
       </form>
-    </AuthSplitLayout>
+   </div>
   );
 }

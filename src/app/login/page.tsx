@@ -18,46 +18,40 @@ export default function LoginPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: wire up to auth endpoint, then navigate only on success
     router.push("/dashboard");
   }
 
   return (
-    <div className="absolute inset-0 z-10 grid lg:h-screen lg:overflow-hidden lg:grid-cols-[5fr_6fr]">
-      {/* Left panel */}
-      <div className="relative flex flex-col bg-[#08745F] overflow-hidden text-white px-10 pt-8 pb-8 lg:px-14 lg:pt-8 lg:pb-8">
-
-        {/* Content */}
+    <div className="absolute inset-0 z-10 flex flex-col lg:grid lg:h-screen lg:overflow-hidden lg:grid-cols-[5fr_6fr]">
+      {/* Splash header (mobile/tablet) / Left panel (desktop) */}
+      <div className="relative flex flex-col bg-[#08745F] overflow-hidden text-white px-6 pt-6 pb-6 lg:px-14 lg:pt-8 lg:pb-8">
         <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-sm flex-1 flex-col justify-between">
           <div>
-            <div className="mb-10">
+            <div className="mb-5 lg:mb-10">
               <Logo variant="light" />
             </div>
+              <h1 className=" text-[21px] lg:text-3xl font-semibold leading-tight max-w-sm">
+                Welcome back.
+                <br />
+                Your money in <br /> one clear picture.
+              </h1>
 
-            <h1 className="text-3xl font-semibold leading-tight max-w-sm">
-              Welcome back.
-              <br />
-              Your money,
-              <br />
-              one clear picture.
-            </h1>
+              <p className="mt-4 hidden lg:block max-w-sm text-sm text-white/70 leading-relaxed">
+                Log in to see today&apos;s sales across every branch, channel, and
+                staff member — in real time.
+              </p>
 
-            <p className="mt-4 hidden max-w-sm text-sm text-white/70 leading-relaxed sm:block">
-              Log in to see today&apos;s sales across every branch, channel, and
-              staff member — in real time.
-            </p>
-
-            <ul className="mt-6 hidden space-y-2.5 sm:block">
-              {bullets.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-white/85">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/60" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+              <ul className="mt-6 hidden lg:block space-y-2.5">
+                {bullets.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-white/85">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/60" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
           </div>
 
-          <blockquote className="mt-8 hidden max-w-sm rounded-lg border border-white/20 bg-white/10 p-5 backdrop-blur-sm sm:block">
+          <blockquote className="mt-8 hidden max-w-sm rounded-lg border border-white/20 bg-white/10 p-5 backdrop-blur-sm lg:block">
             <p className="text-sm text-white/90 leading-relaxed">
               &ldquo;I don&apos;t need faster payments. I need to know, at a
               glance, that every naira coming in is accounted for.&rdquo;
@@ -69,8 +63,8 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right panel */}
-      <div className="flex items-center justify-center bg-white px-6 py-8">
+      {/* Right / form panel */}
+      <div className="flex items-center justify-center  bg-white px-6 py-8 ">
         <div className="w-full max-w-sm">
           <h2 className="text-2xl font-semibold text-gray-900">
             Log in to your account
@@ -81,10 +75,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-900 mb-1.5"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-1.5">
                 Work email
               </label>
               <input
@@ -98,10 +89,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-900 mb-1.5"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -135,10 +123,7 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 text-gray-600">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-[#08745F] focus:ring-[#08745F]/30"
-                />
+                <input type="checkbox" className="h-4 w-4 rounded border-gray-300 text-[#08745F] focus:ring-[#08745F]/30" />
                 Remember me
               </label>
               <a href="/forgot-password" className="font-medium text-[#08745F] hover:underline">

@@ -359,16 +359,16 @@ const monthlyStaff = [
 // Converted to the same bar-chart structure used by the other charts.
 
 const customTrend = [
-  { label: "Jul 1", segments: [18] },
-  { label: "Jul 4", segments: [22] },
-  { label: "Jul 8", segments: [15] },
-  { label: "Jul 12", segments: [28] },
-  { label: "Jul 16", segments: [24] },
-  { label: "Jul 20", segments: [32] },
-  { label: "Jul 25", segments: [27] },
-  { label: "Jul 29", segments: [36] },
-  { label: "Aug 8", segments: [30] },
-  { label: "Aug 19", segments: [40] },
+  { label: "Jul 1", segments: [7.2, 5.0, 3.2, 1.8, 0.7] },
+  { label: "Jul 4", segments: [8.8, 6.2, 4.0, 2.2, 0.9] },
+  { label: "Jul 8", segments: [6.0, 4.2, 2.7, 1.5, 0.6] },
+  { label: "Jul 12", segments: [11.2, 7.8, 5.0, 2.8, 1.1] },
+  { label: "Jul 16", segments: [9.6, 6.7, 4.3, 2.4, 1.0] },
+  { label: "Jul 20", segments: [12.8, 9.0, 5.8, 3.2, 1.3] },
+  { label: "Jul 25", segments: [10.8, 7.6, 4.9, 2.7, 1.1] },
+  { label: "Jul 29", segments: [14.4, 10.1, 6.5, 3.6, 1.4] },
+  { label: "Aug 8", segments: [12.0, 8.4, 5.4, 3.0, 1.2] },
+  { label: "Aug 19", segments: [16.0, 11.2, 7.2, 4.0, 1.6] },
 ];
 
 const customChannels = [
