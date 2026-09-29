@@ -43,9 +43,9 @@ export default function SignUpPage() {
   };
 
   return (
- <div className="absolute inset-0 z-10 flex flex-col lg:grid lg:h-screen lg:grid-cols-[5fr_6fr]">
+ <div className="h-screen absolute inset-0 z-10 flex flex-col lg:grid lg:h-screen lg:grid-cols-[5fr_6fr]">
       {/* Splash header (mobile/tablet) / Left panel (desktop) */}
-      <div className="relative flex h-[257px] shrink-0 flex-col overflow-visible bg-[#08745F] px-6 pt-6 pb-6 text-white lg:h-auto lg:px-14 lg:pt-8 lg:pb-8">
+      <div className="relative flex shrink-0 flex-col overflow-visible bg-[#08745F] px-6 pt-6 pb-6 text-white lg:h-auto lg:px-14 lg:pt-8 lg:pb-8">
         <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-sm flex-1 flex-col justify-between">
           <div>
             <div className="mb-5">

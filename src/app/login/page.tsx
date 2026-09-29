@@ -22,7 +22,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="absolute inset-0 z-10 flex flex-col lg:grid lg:h-screen lg:overflow-hidden lg:grid-cols-[5fr_6fr]">
+    <div className="h-screen absolute inset-0 z-10 flex flex-col lg:grid lg:h-screen lg:overflow-hidden lg:grid-cols-[5fr_6fr]">
       {/* Splash header (mobile/tablet) / Left panel (desktop) */}
       <div className="relative flex flex-col bg-[#08745F] overflow-hidden text-white px-6 pt-6 pb-6 lg:px-14 lg:pt-8 lg:pb-8">
         <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-sm flex-1 flex-col justify-between">
@@ -33,7 +33,7 @@ export default function LoginPage() {
               <h1 className=" text-[28px] lg:text-3xl font-semibold leading-tight max-w-sm">
                 Welcome back.
                 <br />
-                Your money in <br /> one clear picture.
+                Your money in <br /> One clear picture.
               </h1>
 
               <p className="mt-4 hidden lg:block max-w-sm text-sm text-white/70 leading-relaxed">
