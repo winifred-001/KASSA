@@ -30,7 +30,7 @@ export default function LoginPage() {
             <div className="mb-5 lg:mb-10">
               <Logo variant="light" />
             </div>
-              <h1 className=" text-[21px] lg:text-3xl font-semibold leading-tight max-w-sm">
+              <h1 className=" text-[28px] lg:text-3xl font-semibold leading-tight max-w-sm">
                 Welcome back.
                 <br />
                 Your money in <br /> one clear picture.
@@ -64,7 +64,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right / form panel */}
-      <div className="flex items-center justify-center  bg-white px-6 py-8 ">
+      <div className="flex items-center justify-center bg-white px-6 py-8 ">
         <div className="w-full max-w-sm">
           <h2 className="text-2xl font-semibold text-gray-900">
             Log in to your account
