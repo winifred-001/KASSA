@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname,useRouter } from "next/navigation";
 import { X, LogOut } from "lucide-react";
 
 import Logo from "@/components/logo";
@@ -23,6 +23,7 @@ export default function KassaSidebar({
   onClose: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <>
@@ -83,7 +84,7 @@ export default function KassaSidebar({
         </nav>
 
         {/* Log out */} 
-        <button type="button" onClick={() => { console.log("Logging out..."); }} 
+        <button type="button" onClick={() => {  router.push("/login"); }} 
         className="mx-4 mb-5 flex h-[44px] w-[calc(100%-2rem)] items-center gap-3 rounded-[8px] px-[14px] text-[14px] text-white/90 transition hover:bg-[#075C4D]" > 
         <LogOut size={18} />
         <span>Log out</span> 
